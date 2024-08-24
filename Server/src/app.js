@@ -14,6 +14,13 @@ app.get('/', (req, res) => {
     res.send("Hi this site is working")
 })
 
+app.get("/music/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, "public", "Music", filename);
+    res.sendFile(filePath);
+});
+
+
 app.use(cors({
     origin: ["http://localhost:5173"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
