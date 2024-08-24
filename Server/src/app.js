@@ -7,7 +7,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("../public",express.static("public"));
+app.use("/music", express.static("public/Music"));
+
 
 app.get('/', (req, res) => {
     res.send("Hi this site is working")
