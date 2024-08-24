@@ -2,14 +2,21 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/index.js",
+            "src": "src/app.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
+            "src": "/music/(.*)",
+            "dest": "/public/music/$1"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/src/index.js"
+            "dest": "/src/app.js"
         }
     ]
 }
