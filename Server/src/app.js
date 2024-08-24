@@ -2,18 +2,12 @@ import express from "express";
 import errorHandler from "./middlewares/error.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-
-// Define __filename and __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-// app.use("/music", express.static("public/Music"));
+app.use("/music", express.static("src/Music"));
 
 
 app.get('/', (req, res) => {
@@ -22,7 +16,6 @@ app.get('/', (req, res) => {
 
 
 
-app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(cors({
     origin: ["http://localhost:5173"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
