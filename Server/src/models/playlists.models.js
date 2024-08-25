@@ -18,7 +18,7 @@ const playlistsSchema = new Schema(
                 ref:"Song"
             }
         ]
-    },{timestamps:'true'}
+    },{timestamps:true}
 )
 
 export const Playlist = mongoose.model('Playlist', playlistsSchema)

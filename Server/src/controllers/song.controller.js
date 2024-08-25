@@ -5,47 +5,46 @@ import { User } from "../models/user.models.js";
 import { Song } from "../models/songs.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-
-
 const addSong = asyncHandler(async (req, res) => {
     const { songName, genre } = req.body;
     // console.log(req.user)
 
     if (!songName) {
-        throw new ApiError(404, "Song name not provided")
+        throw new ApiError(404, "Song name not provided");
     }
     if (!genre) {
-        throw new ApiError(404, "Genre not provided")
+        throw new ApiError(404, "Genre not provided");
     }
     // console.log(req.files)
     if (!req.files?.thumbnail) {
-        throw new ApiError(404, "Thumbnail not provided")
+        throw new ApiError(404, "Thumbnail not provided");
     }
     if (!req.files?.song) {
-        throw new ApiError(404,"Song not found")
+        throw new ApiError(404, "Song not found");
     }
-    const thumbnailBuffer = req.files.thumbnail[0].buffer.toString("base64")
-    const songBuffer = req.files.song[0].buffer.toString("base64")
+    const thumbnailBuffer = req.files.thumbnail[0].buffer.toString("base64");
+    const songBuffer = req.files.song[0].buffer.toString("base64");
 
     const thumbnailResponse = await uploadOnCloudinary(
         thumbnailBuffer,
         `thumbnails/${songName}`
     );
     if (!thumbnailResponse?.secure_url) {
-        throw new ApiError(404, "Error uploading thumbnail to cloudinary")
+        throw new ApiError(404, "Error uploading thumbnail to cloudinary");
     }
     const songResponse = await uploadOnCloudinary(
         songBuffer,
         `songs/${songName}`
     );
     if (!songResponse?.secure_url) {
-        throw new ApiError(404, "Error uploading song to cloudinary")
+        throw new ApiError(404, "Error uploading song to cloudinary");
     }
 
-    const {duration} = songResponse
+    const { duration } = songResponse;
 
-
-    const user = await User.findById(req.user._id).select('-password -refreshToken')
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
 
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -60,27 +59,79 @@ const addSong = asyncHandler(async (req, res) => {
     });
 
     if (!song) {
-        throw new ApiError(404, "Error creating song")
+        throw new ApiError(404, "Error creating song");
     }
 
     return res
         .status(200)
-        .json(
-            new ApiResponse(
-            200, song,"Songs uploaded successfully"
+        .json(new ApiResponse(200, song, "Songs uploaded successfully"));
+});
+
+const uploadSongsBatch = asyncHandler(async (req, res) => {
+    const { songs } = req.body;
+
+    if (!songs || !Array.isArray(songs)) {
+        throw new ApiError(404, "Songs not provided or not an array");
+    }
+
+    const createdSongs = [];
+
+    for (const song of songs) {
+        const { songName, artist, album, genre, duration, songUrl } = song;
+
+        if (!songName) {
+            console.warn(
+                `Skipping song due to missing 'songName': ${JSON.stringify(
+                    song
+                )}`
+            );
+            
+            console.log("");
+            console.log("");
+            continue;
+        }
+        if (!genre) {
+            console.warn(
+                `Skipping song due to missing 'genre': ${JSON.stringify(
+                    song
+                )}`
+
+            );
+            console.log("")
+            console.log("")
+            continue;
+        }
+        if (!songUrl) {
+            console.warn(
+                `Skipping song due to missing 'songUrl': ${JSON.stringify(
+                    song
+                )}`
+            );
+            console.log("")
+            console.log("")
+            continue;
+        }
+
+        const newSong = await Song.create(
+            {
+                songName,
+                artist: artist || "Unknown Artist",
+                album: album || "Unknown Album",
+                genre,
+                duration,
+                songUrl,
+            }
         )
-    )
 
+        createdSongs.push(newSong)
+    }
 
-    
-})
-
-const songsAddedByAdmin = asyncHandler(async (req, res) => {
-    const { thumbnail, songsName, artist, album, genre } = req.body;
-
-})
+    return res
+        .status(200)
+        .json(new ApiResponse(200, createdSongs, "Success created songs"));
+});
 
 export default {
-    songsAddedByAdmin,
-    addSong
-}
+    addSong,
+    uploadSongsBatch
+};

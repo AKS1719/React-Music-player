@@ -6,12 +6,6 @@
             "use": "@vercel/node"
         }
     ],
-    "rewrites": [
-        {
-            "source": "/music/:path*",
-            "destination": "/src/Music/:path*"
-        }
-    ],
     "routes": [
         {
             "src": "/(.*)",

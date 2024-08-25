@@ -27,12 +27,14 @@ app.use(cors({
 import userRouter from "./routes/user.routes.js"
 import songRouter from "./routes/songs.routes.js"
 import adminRouter from "./routes/admin.routes.js"
+import playlistRouter from "./routes/playlist.routes.js"
 
 
 
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/songs',songRouter)
 app.use('/api/v1/admin',adminRouter)
+app.use('/api/v1/playlist',playlistRouter)
 
 app.use(errorHandler)
 

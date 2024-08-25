@@ -4,8 +4,9 @@ import ApiResponse from "../utils/ApiResponse.js"
 import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import {accessTokenOptions, refreshTokenOptions} from "../constants.js"
-
-
+import { Playlist } from "../models/playlists.models.js";
+import { RecentlyPlayed } from "../models/recentlyPlayed.models.js"
+import {Song} from "../models/songs.models.js"
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -55,9 +56,8 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error occured while Registering user user");
     }
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
-    const finalUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    );
+    const finalUser = await User.findById(user._id)
+        .select("-password -refreshToken")
 
     return res
         .status(200)
@@ -81,9 +81,9 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!isPasswordValid) {
         throw new ApiError(403, "Invalid credentials");
     }
-    const finalUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    );
+    let finalUser = await User.findById(user._id)
+        .select("-password -refreshToken")
+    
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
     return res
         .status(201)
@@ -132,9 +132,22 @@ const changeUserPassword = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(201, {}, "Password updated"));
 });
 
-
+// TODO : check all populate once again 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    return res.status(200).json(new ApiResponse(201, req.user, "Success"));
+    let user = await User.findById(req.user._id)
+        .select('-password -refreshToken')
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    let finalUser = await User.findById(user._id)
+        .select("-password -refreshToken")
+
+    return res
+        .status(200)
+        .json(
+        new ApiResponse(200,user,"Success")
+    )
 });
 
 const getUserByusername = asyncHandler(async (req, res) => {
@@ -175,12 +188,17 @@ const updateAvatar = asyncHandler(async (req, res) => {
         {
             $set: {
                 avatar,
-            }
+            },
         },
         {
-            new:true
+            new: true,
         }
-    ).select("-password -refreshToken")
+    )
+        .select("-password -refreshToken")
+        .populate("playlists")
+        .populate("favorites")
+        .populate("recentlyPlayed")
+        .sort({updatedAt:-1});
 
     if (!updatedUser) {
         throw new ApiError(500, "Error occurred while updating avatar")

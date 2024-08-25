@@ -38,7 +38,7 @@ const userSchema = new Schema(
         },
         playlists: [{ type: Schema.Types.ObjectId, ref: "Playlist" }],
         favorites: [{ type: Schema.Types.ObjectId, ref: "Song" }],
-        recentlyPlayed: [{ type: Schema.Types.ObjectId, ref: "Song" }],
+        recentlyPlayed: [{ type: Schema.Types.ObjectId, ref: "RecentlyPlayed" }],
     },
     { timestamps: true }
 );

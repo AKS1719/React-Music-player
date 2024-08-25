@@ -44,7 +44,6 @@ const songsSchema = new Schema(
         },
         songThumbnailUrl: {
             type: String,
-            required: true,
         }
     },{timestamps:true}
 )
