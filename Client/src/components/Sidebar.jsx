@@ -4,9 +4,21 @@ import { useSelector } from "react-redux";
 import LibraryComponent from "./LibraryComponent";
 import { SlLogout } from "react-icons/sl";
 
+
 const Sidebar = () => {
     const authStatus = useSelector((state) => state.auth.status);
-    const userData = useSelector(state=> state.auth.userData)
+    const userData = useSelector(state => state.auth.userData)
+    
+    const handleLogin = () => {
+        
+    }
+
+    const handleSingup = () => {
+        
+    }
+    const handleLogout = async () => {
+        
+    }
 
     return (
         <Box
@@ -14,7 +26,6 @@ const Sidebar = () => {
             w={"20%"}
             height={"100%"}
             display={"flex"}
-            // justifyContent={"center"}
             alignItems={"center"}
             py={"5"}
             flexDirection={"column"}
@@ -41,7 +52,8 @@ const Sidebar = () => {
                         Welcome!
                     </Text>
                     <VStack spacing={3}>
-                            <Button
+                        <Button
+                            onClick={handleLogin}
                                 w="full"
                                 bgGradient="linear(to-r, teal.400, blue.500)"
                                 color="white"
@@ -56,7 +68,8 @@ const Sidebar = () => {
                             >
                                 Login
                             </Button>
-                            <Button
+                        <Button
+                            onClick={handleSingup}
                                 w="full"
                                 bgGradient="linear(to-r, orange.400, pink.500)"
                                 color="white"
@@ -101,6 +114,7 @@ const Sidebar = () => {
                         display={"flex"}
                         alignItems={"center"}
                         mb={3}
+                        onClick={() => { console.log("make a profile page you fool")}}
                     >
                         <Avatar
                             name={userData?.name}

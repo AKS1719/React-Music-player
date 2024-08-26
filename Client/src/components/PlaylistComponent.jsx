@@ -3,23 +3,15 @@ import React from "react";
 
 const PlaylistComponent = () => {
     return (
-        <Box
-            as="section"
-            width={'90%'}
-            rounded={'10px'}
-            bg={'red'}
-        >
             <Box
-                as="header"
-                bg={'gray.800'}
+                as="section"
+                bg={'gray.600'}
                 p={2}
-                roundedTopLeft={'10px'}
-                roundedTopRight={'10px'}
+            w={'full'}
 
-            >
-                Titile
+        >
+            hi
             </Box>
-        </Box>
     );
 };
 
