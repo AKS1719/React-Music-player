@@ -47,8 +47,10 @@ const Carousel = () => {
                 timer = setTimeout(() => {
                     video.currentTime = 0; // Reset video to the start
                     moveToNextSlide();
-                    video.pause();
                 }, 5000); // Adjust time for video slide
+                setTimeout(() => {
+                    video.pause();
+                }, 7000);
             }
         } else {
             slideShow.to(carouselRef.current, {
