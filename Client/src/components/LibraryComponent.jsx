@@ -27,7 +27,7 @@ const LibraryComponent = () => {
         <Flex
             direction="column"
             rounded="10px"
-            h="full"
+            h="70%"
             as="section"
             bg="gray.800"
             borderWidth="1px"
@@ -134,13 +134,14 @@ const LibraryComponent = () => {
                     fontSize="xl"
                     mb={4}
                     pb={2}
+                    color={'white'}
                     borderBottomWidth="1px"
                     borderBottomColor="gray.700"
                 >
                     Playlists
                 </Text>
                 <Box
-                    h="30vh"
+                    h="85%"
                     overflowY="scroll"
                     bg="gray.700"
                     p={2}
@@ -159,7 +160,9 @@ const LibraryComponent = () => {
                         },
                     }}
                 >
-                    <Box>
+                    <Box
+                        h={'100%'}
+                    >
                         {Playlists?.length > 0 ? (
                             Playlists.map((playlist) => (
                                 <Box
@@ -182,20 +185,22 @@ const LibraryComponent = () => {
                             ))
                         ) : (
                             <Box
-                                p={6}
+                                p={3}
                                 bg="gray.800"
                                 rounded="md"
                                 borderWidth="2px"
                                 borderColor="teal.400"
                                 textAlign="center"
-                                color="white"
+                                    color="white"
+                                    h={'100%'}
+                                
                             >
                                 <Text
                                     mb={4}
-                                    fontSize="lg"
+                                        fontSize="lg"
+                                        textAlign={'center'}
                                 >
-                                    No playlists available. Create a new
-                                    playlist!
+                                    No playlists available. Create a new playlist!
                                 </Text>
                                 <Button
                                     colorScheme="teal"

@@ -8,6 +8,7 @@ const PlaylistComponent = () => {
                 bg={'gray.600'}
                 p={2}
             w={'full'}
+            // h={'10%'}
 
         >
             hi

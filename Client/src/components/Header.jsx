@@ -7,6 +7,7 @@ const Header = () => {
             w={'full'}
             bg={'gray.800'}
             p={2}
+            color={'white'}
             borderWidth={'1px'}
             borderStyle={'solid'}
             // borderRadius={'10px'}
