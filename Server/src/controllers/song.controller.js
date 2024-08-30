@@ -85,20 +85,17 @@ const uploadSongsBatch = asyncHandler(async (req, res) => {
                     song
                 )}`
             );
-            
+
             console.log("");
             console.log("");
             continue;
         }
         if (!genre) {
             console.warn(
-                `Skipping song due to missing 'genre': ${JSON.stringify(
-                    song
-                )}`
-
+                `Skipping song due to missing 'genre': ${JSON.stringify(song)}`
             );
-            console.log("")
-            console.log("")
+            console.log("");
+            console.log("");
             continue;
         }
         if (!songUrl) {
@@ -107,23 +104,21 @@ const uploadSongsBatch = asyncHandler(async (req, res) => {
                     song
                 )}`
             );
-            console.log("")
-            console.log("")
+            console.log("");
+            console.log("");
             continue;
         }
 
-        const newSong = await Song.create(
-            {
-                songName,
-                artist: artist || "Unknown Artist",
-                album: album || "Unknown Album",
-                genre,
-                duration,
-                songUrl,
-            }
-        )
+        const newSong = await Song.create({
+            songName,
+            artist: artist || "Unknown Artist",
+            album: album || "Unknown Album",
+            genre,
+            duration,
+            songUrl,
+        });
 
-        createdSongs.push(newSong)
+        createdSongs.push(newSong);
     }
 
     return res
@@ -131,7 +126,17 @@ const uploadSongsBatch = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, createdSongs, "Success created songs"));
 });
 
+const getSongsList = asyncHandler(async (req, res) => {
+    const songs = await Song.find().limit(10);
+
+    if (!Array.isArray(songs) || songs.length === 0) {
+        throw new ApiError(404, "No Songs Found");
+    }
+    res.status(200).json(new ApiResponse(200, songs, "Songs found"));
+});
+
 export default {
     addSong,
-    uploadSongsBatch
+    uploadSongsBatch,
+    getSongsList
 };

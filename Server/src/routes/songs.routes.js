@@ -22,5 +22,6 @@ router.route("/addSong").post(
 );
 
 router.route("/uploadBatchSongs").post(songController.uploadSongsBatch);
+router.route("/getSongList").get(songController.getSongsList)
 
 export default router;

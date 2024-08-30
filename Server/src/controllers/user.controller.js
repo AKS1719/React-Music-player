@@ -210,6 +210,21 @@ const updateAvatar = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, updatedUser, "Avatar details updated"));
 })
 
+const getArtistList = asyncHandler(async (req, res) => {
+    const artists = User.find({
+        isSinger: true
+    })
+    if (!Array.isArray(artists) ||  artists.length === 0) {
+        throw new ApiError(404, "No artists found");
+    }
+    return res.status(200)
+        .json(
+        new ApiResponse(200, {artists},"Found artists")
+    )
+})
+
+
+
 export default {
     registerUser,
     loginUser,
@@ -217,5 +232,6 @@ export default {
     changeUserPassword,
     getCurrentUser,
     getUserByusername,
-    updateAvatar
+    updateAvatar,
+    getArtistList
 }

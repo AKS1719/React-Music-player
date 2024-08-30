@@ -7,11 +7,8 @@ const ArtistsComponent = () => {
     <Box
       h={'37%'}
           w={"full"}
-          bg={"gray.800"}
           p={2}
-          borderWidth={"1px"}
-          borderStyle={"solid"}
-          // borderRadius={'10px'}
+          color={'white'}
       >
           showing artists
       </Box>

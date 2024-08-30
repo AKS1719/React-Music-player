@@ -4,11 +4,9 @@ const NewlyAddedSongs = () => {
   return (
     <Box
       h={'37%'}
-          w={"full"}
-          bg={"gray.800"}
+      w={"full"}
+      color={'white'}
           p={2}
-          borderWidth={"1px"}
-          borderStyle={"solid"}
       >
           Showing newly Added songs
       </Box>

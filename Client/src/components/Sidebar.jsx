@@ -3,6 +3,8 @@ import { Avatar, Box, Text, Button, VStack, Divider } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import LibraryComponent from "./LibraryComponent";
 import { SlLogout } from "react-icons/sl";
+import { NavLink } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
 
 const Sidebar = () => {
     const authStatus = useSelector((state) => state.auth.status);
@@ -113,6 +115,20 @@ const Sidebar = () => {
                             {userData?.name}
                         </Text>
                     </Box>
+                    <Button
+                        as={NavLink}
+                        to={"/search"}
+                        w="full"
+                        bg={"gray.900"}
+                        // bgGradient="linear(to-r, red.400, pink.500)"
+                        color="white"
+                        _hover={{
+                            bg: "gray.700",
+                        }}
+                        mb={"2"}
+                    >
+                        <FiSearch /> &nbsp; Search
+                    </Button>
                     <Button
                         onClick={handleLogout}
                         w="full"

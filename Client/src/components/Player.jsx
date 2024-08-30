@@ -9,9 +9,11 @@ const Player = () => {
           p={2}
           borderWidth={"1px"}
           borderStyle={"solid"}
-          // borderRadius={'10px'}
+      borderRadius={'10px'}
+      borderColor={'gray.700'}
+      color={'white'}
       >
-          hi there
+          Player
       </Box>
   );
 }

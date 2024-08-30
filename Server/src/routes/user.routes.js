@@ -34,4 +34,6 @@ router
     .route("/updateAvatar")
     .post(verifyJWT, upload.single("avatar"), userController.updateAvatar);
 
+router.route('/getArtistList').get(userController.getArtistList)
+
 export default router;
