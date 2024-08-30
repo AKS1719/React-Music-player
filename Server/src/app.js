@@ -16,11 +16,13 @@ app.get('/', (req, res) => {
 
 
 
-app.use(cors({
-    origin: ["http://localhost:5173"],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials:true
-}))
+app.use(
+    cors({
+        origin: ["https://vaiaksh-music.vercel.app/", "http://localhost:5173"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    })
+);
 
 // setting up routes
 
