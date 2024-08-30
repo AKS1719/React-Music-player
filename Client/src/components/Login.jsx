@@ -10,7 +10,6 @@ import {
     VStack,
     Text,
 } from "@chakra-ui/react";
-import axios from "axios";
 
 const Login = () => {
     const {
@@ -20,15 +19,15 @@ const Login = () => {
     } = useForm();
 
     const onSubmit = async (data) => {
-        try {
-            const response = await axios.post(
-                "http://localhost:5000/api/users/register",
-                data
-            );
-            alert(response.data.message);
-        } catch (error) {
-            console.error("Error during sign-up:", error.response.data.message);
-        }
+        // try {
+        //     const response = await axios.post(
+        //         "http://localhost:5000/api/users/register",
+        //         data
+        //     );
+        //     alert(response.data.message);
+        // } catch (error) {
+        //     console.error("Error during sign-up:", error.response.data.message);
+        // }
     };
 
     return (

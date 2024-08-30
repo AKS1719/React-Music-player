@@ -5,14 +5,11 @@ import LibraryComponent from "./LibraryComponent";
 import { SlLogout } from "react-icons/sl";
 import { NavLink } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
-
+import Login from "../components/Login"
 const Sidebar = () => {
     const authStatus = useSelector((state) => state.auth.status);
     const userData = useSelector((state) => state.auth.userData);
 
-    const handleLogin = () => {};
-    const handleSignup = () => {};
-    const handleLogout = async () => {};
 
     return (
         <Box

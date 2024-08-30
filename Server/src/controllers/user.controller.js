@@ -211,7 +211,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
 })
 
 const getArtistList = asyncHandler(async (req, res) => {
-    const artists = User.find({
+    const artists = await User.find({
         isSinger: true
     })
     if (!Array.isArray(artists) ||  artists.length === 0) {
