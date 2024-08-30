@@ -34,8 +34,7 @@ const LibraryComponent = () => {
             borderStyle="solid"
             borderColor="gray.700"
             w="90%"
-            px={4}
-            py={2}
+            p={4}
             mb={4}
             boxShadow="md"
             _hover={{ boxShadow: "lg" }}
@@ -142,6 +141,7 @@ const LibraryComponent = () => {
                     Playlists
                 </Text>
                 <Box
+                    h="85%"
                     overflowY="scroll"
                     bg="gray.700"
                     p={2}
