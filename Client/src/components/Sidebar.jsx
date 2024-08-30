@@ -42,7 +42,8 @@ const Sidebar = () => {
                     borderColor={"gray.700"}
                     w={"90%"}
                     rounded={"10px"}
-                    p={4}
+                    py={2}
+                    px={4}
                     mb={4}
                     textAlign="center"
                     h={"30%"} // Height adjusted to 30% of the Sidebar height
@@ -51,7 +52,7 @@ const Sidebar = () => {
                         fontSize={"xl"}
                         fontWeight={"bold"}
                         color={"white"}
-                        mb={4}
+                        mb={2}
                     >
                         Welcome!
                     </Text>
@@ -89,7 +90,7 @@ const Sidebar = () => {
                         </Button>
                     </VStack>
                     <Divider
-                        my={4}
+                        my={3}
                         borderColor="gray.600"
                     />
                     <Text
