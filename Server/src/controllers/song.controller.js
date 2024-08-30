@@ -127,7 +127,7 @@ const uploadSongsBatch = asyncHandler(async (req, res) => {
 });
 
 const getSongsList = asyncHandler(async (req, res) => {
-    const songs = await Song.find().limit(10);
+    const songs = await Song.find().sort({ createdAt: -1 }).limit(5);
 
     if (!Array.isArray(songs) || songs.length === 0) {
         throw new ApiError(404, "No Songs Found");
