@@ -19,7 +19,7 @@ const Sidebar = () => {
             height={"100%"}
             display={"flex"}
             alignItems={"center"}
-            py={"2%"}
+            py={4}
             flexDirection={"column"}
         >
             {!authStatus ? (
@@ -28,7 +28,7 @@ const Sidebar = () => {
                     bg={"gray.800"}
                     borderWidth={"2px"}
                     borderColor={"gray.700"}
-                    w={["95%", "90%"]} // Responsive width
+                    w={"90%"} // Responsive width
                     rounded={"4%"}
                     p={"4%"}
                     mb={"4%"}
@@ -39,7 +39,7 @@ const Sidebar = () => {
                         fontSize={["4vw", "2.5vw", "1.5vw"]} // Responsive font size
                         fontWeight={"bold"}
                         color={"white"}
-                        mb={"4%"}
+                        mb={"2%"}
                     >
                         Welcome!
                     </Text>
@@ -73,7 +73,7 @@ const Sidebar = () => {
                         borderColor="gray.600"
                     />
                     <Text
-                        fontSize={["2.5vw", "1.5vw", "1vw"]}
+                        fontSize={"2vh"}
                         color={"gray.400"}
                     >
                         Join us to explore exclusive content!
@@ -85,7 +85,7 @@ const Sidebar = () => {
                     bg={"gray.800"}
                     borderWidth={"2px"}
                     borderColor={"gray.700"}
-                    w={["95%", "90%"]} // Responsive width
+                    w={"90%"} // Responsive width
                     rounded={"4%"}
                     p={"4%"}
                     mb={"4%"}

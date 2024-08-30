@@ -21,7 +21,7 @@ const LibraryComponent = () => {
     return (
         <Flex
             direction="column"
-            rounded="4%"
+            rounded="10px"
             h="70%"
             as="section"
             bg="gray.800"
@@ -40,7 +40,8 @@ const LibraryComponent = () => {
                 px={"2%"}
                 borderBottomWidth="1px"
                 borderBottomColor="gray.700"
-                mb={"2%"}
+                mb={"4%"}
+                p={'2%'}
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
@@ -69,7 +70,7 @@ const LibraryComponent = () => {
                 as="section"
                 p={"3%"}
                 bg="gray.700"
-                rounded="4%"
+                rounded="10px"
                 mb={"3%"}
                 borderWidth="2px"
                 borderColor="gray.600"
@@ -93,7 +94,7 @@ const LibraryComponent = () => {
                 as="section"
                 p={"3%"}
                 bg="gray.700"
-                rounded="4%"
+                rounded="10px"
                 mb={"3%"}
                 borderWidth="2px"
                 borderColor="gray.600"
