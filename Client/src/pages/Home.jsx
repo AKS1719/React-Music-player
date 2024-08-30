@@ -85,7 +85,7 @@ const Home = () => {
                         backdropFilter="blur(10px)"
                     >
                         <Text
-                            fontSize="3vw"
+                            fontSize={{ base: "3xl", md: "5xl" }}
                             fontWeight="bold"
                             color="white"
                             px={4}
@@ -101,7 +101,7 @@ const Home = () => {
                         </Text>
                         <Button
                             onClick={()=> {navigate('/music-player')}}
-                                fontSize="1.5vw"
+                                fontSize={{ base: "lg", md: "xl" }}
                                 color="white"
                                 px={8}
                                 py={4}

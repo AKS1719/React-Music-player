@@ -1,15 +1,5 @@
 import React from "react";
-import {
-    Avatar,
-    Box,
-    Center,
-    Text,
-    Icon,
-    Button,
-    VStack,
-    Link,
-    Divider,
-} from "@chakra-ui/react";
+import { Avatar, Box, Text, Button, VStack, Divider } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import LibraryComponent from "./LibraryComponent";
 import { SlLogout } from "react-icons/sl";
@@ -19,44 +9,41 @@ const Sidebar = () => {
     const userData = useSelector((state) => state.auth.userData);
 
     const handleLogin = () => {};
-
-    const handleSingup = () => {};
+    const handleSignup = () => {};
     const handleLogout = async () => {};
 
     return (
         <Box
             bg={"gray.900"}
             w={"20%"}
-            height={"100%"} // Updated to use 100% height of the parent container
+            height={"100%"}
             display={"flex"}
             alignItems={"center"}
-            py={4}
+            py={"2%"}
             flexDirection={"column"}
         >
-            {!authStatus && (
+            {!authStatus ? (
                 <Box
                     as="section"
                     bg={"gray.800"}
-                    borderWidth={"1px"}
-                    borderStyle={"solid"}
+                    borderWidth={"2px"}
                     borderColor={"gray.700"}
-                    w={"90%"}
-                    rounded={"10px"}
-                    py={2}
-                    px={4}
-                    mb={4}
+                    w={["95%", "90%"]} // Responsive width
+                    rounded={"4%"}
+                    p={"4%"}
+                    mb={"4%"}
                     textAlign="center"
-                    h={"30%"} // Height adjusted to 30% of the Sidebar height
+                    h={"30%"}
                 >
                     <Text
-                        fontSize={"xl"}
+                        fontSize={["4vw", "2.5vw", "1.5vw"]} // Responsive font size
                         fontWeight={"bold"}
                         color={"white"}
-                        mb={2}
+                        mb={"4%"}
                     >
                         Welcome!
                     </Text>
-                    <VStack spacing={3}>
+                    <VStack spacing={"3"}>
                         <Button
                             onClick={handleLogin}
                             w="full"
@@ -65,15 +52,11 @@ const Sidebar = () => {
                             _hover={{
                                 bgGradient: "linear(to-r, teal.300, blue.400)",
                             }}
-                            _focus={{
-                                outline: "none",
-                                boxShadow: "outline",
-                            }}
                         >
                             Login
                         </Button>
                         <Button
-                            onClick={handleSingup}
+                            onClick={handleSignup}
                             w="full"
                             bgGradient="linear(to-r, orange.400, pink.500)"
                             color="white"
@@ -81,56 +64,50 @@ const Sidebar = () => {
                                 bgGradient:
                                     "linear(to-r, orange.300, pink.400)",
                             }}
-                            _focus={{
-                                outline: "none",
-                                boxShadow: "outline",
-                            }}
                         >
                             Signup
                         </Button>
                     </VStack>
                     <Divider
-                        my={3}
+                        my={"4%"}
                         borderColor="gray.600"
                     />
                     <Text
-                        fontSize={"sm"}
+                        fontSize={["2.5vw", "1.5vw", "1vw"]}
                         color={"gray.400"}
                     >
                         Join us to explore exclusive content!
                     </Text>
                 </Box>
-            )}
-            {authStatus && (
+            ) : (
                 <Box
                     as="section"
                     bg={"gray.800"}
-                    borderWidth={"1px"}
-                    borderStyle={"solid"}
+                    borderWidth={"2px"}
                     borderColor={"gray.700"}
-                    w={"90%"}
-                    rounded={"10px"}
-                    p={4}
-                    mb={4}
+                    w={["95%", "90%"]} // Responsive width
+                    rounded={"4%"}
+                    p={"4%"}
+                    mb={"4%"}
                     textAlign="center"
-                    h={"30%"} // Height adjusted to 30% of the Sidebar height
+                    h={"30%"}
                 >
                     <Box
                         display={"flex"}
                         alignItems={"center"}
-                        mb={3}
+                        mb={"3%"}
                         onClick={() => {
-                            console.log("make a profile page you fool");
+                            console.log("Make a profile page.");
                         }}
                     >
                         <Avatar
                             name={userData?.name}
                             src={userData?.avatar}
-                            size={"md"}
+                            size={["sm", "md"]} // Responsive size
                         />
                         <Text
-                            fontSize={"xl"}
-                            ml={4}
+                            fontSize={["3vw", "1.5vw", "1.2vw"]} // Responsive font size
+                            ml={"2%"}
                             color="white"
                         >
                             {userData?.name}
@@ -144,16 +121,11 @@ const Sidebar = () => {
                         _hover={{
                             bgGradient: "linear(to-r, red.300, pink.400)",
                         }}
-                        _focus={{
-                            outline: "none",
-                            boxShadow: "outline",
-                        }}
                     >
                         <SlLogout /> &nbsp; Logout
                     </Button>
                 </Box>
             )}
-
             <LibraryComponent />
         </Box>
     );

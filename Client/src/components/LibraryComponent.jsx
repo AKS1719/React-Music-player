@@ -1,62 +1,57 @@
-import { Box, Flex, Text, IconButton, HStack, Button, Divider } from "@chakra-ui/react";
 import React, { useState } from "react";
-import PlaylistComponent from "./PlaylistComponent";
+import { Box, Flex, Text, IconButton, HStack, Button } from "@chakra-ui/react";
 import { IoLibrarySharp } from "react-icons/io5";
 import { MdLibraryAdd } from "react-icons/md";
 import { FcLike } from "react-icons/fc";
 import { GoIssueTracks } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import PlaylistComponent from "./PlaylistComponent";
 const LibraryComponent = () => {
-
-    const [Playlists, setPlaylists] = useState([])
-    const navigate = useNavigate()
-
-    const authStatus = useSelector(state=> state.auth.status)
-
-
+    const [Playlists, setPlaylists] = useState([]);
+    const navigate = useNavigate();
+    const authStatus = useSelector((state) => state.auth.status);
 
     const handleCreatePlaylist = async () => {
         if (!authStatus) {
-            alert("login to create playlist")
+            alert("Login to create a playlist");
         }
-    }
+    };
 
     return (
         <Flex
             direction="column"
-            rounded="10px"
+            rounded="4%"
             h="70%"
             as="section"
             bg="gray.800"
-            borderWidth="1px"
-            borderStyle="solid"
+            borderWidth="2px"
             borderColor="gray.700"
             w="90%"
-            p={4}
-            mb={4}
+            p={"4%"}
+            mb={"4%"}
             boxShadow="md"
             _hover={{ boxShadow: "lg" }}
             transition="box-shadow 0.3s ease-in-out"
         >
             <Box
                 as="header"
-                p={2}
+                py={"1%"}
+                px={"2%"}
                 borderBottomWidth="1px"
                 borderBottomColor="gray.700"
-                mb={4}
+                mb={"2%"}
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
             >
                 <Text
-                    fontSize="xl"
+                    fontSize="1.2vw"
                     fontWeight="bold"
                     color="white"
                     display="flex"
                     alignItems="center"
-                    gap={2}
+                    gap={"2%"}
                 >
                     <IoLibrarySharp /> Library
                 </Text>
@@ -72,21 +67,21 @@ const LibraryComponent = () => {
 
             <HStack
                 as="section"
-                p={3}
+                p={"3%"}
                 bg="gray.700"
-                rounded="10px"
-                mb={4}
-                borderWidth="1px"
-                borderStyle="solid"
+                rounded="4%"
+                mb={"3%"}
+                borderWidth="2px"
                 borderColor="gray.600"
-                spacing={3}
+                spacing={"3%"}
                 alignItems="center"
                 _hover={{ bg: "gray.600", transform: "scale(1.02)" }}
                 transition="all 0.2s ease-in-out"
                 cursor="pointer"
             >
-                <FcLike size="24px" />
+                <FcLike size="1.2vw" />
                 <Text
+                    fontSize={"1vw"}
                     color="white"
                     fontWeight="semibold"
                 >
@@ -96,24 +91,24 @@ const LibraryComponent = () => {
 
             <HStack
                 as="section"
-                p={3}
+                p={"3%"}
                 bg="gray.700"
-                rounded="10px"
-                mb={4}
-                borderWidth="1px"
-                borderStyle="solid"
+                rounded="4%"
+                mb={"3%"}
+                borderWidth="2px"
                 borderColor="gray.600"
-                spacing={3}
+                spacing={"3%"}
                 alignItems="center"
                 _hover={{ bg: "gray.600", transform: "scale(1.02)" }}
                 transition="all 0.2s ease-in-out"
                 cursor="pointer"
             >
                 <GoIssueTracks
-                    size="24px"
+                    size="1.2vw"
                     color="white"
                 />
                 <Text
+                    fontSize={"1vw"}
                     color="white"
                     fontWeight="semibold"
                 >
@@ -124,27 +119,26 @@ const LibraryComponent = () => {
             <Box
                 as="section"
                 h="full"
-                p={1}
+                p={"1%"}
                 bg="gray.800"
                 borderRadius="md"
                 boxShadow="md"
             >
                 <Text
                     fontWeight="bold"
-                    fontSize="xl"
-                    mb={4}
-                    pb={2}
-                    color={'white'}
+                    fontSize="1.2vw"
+                    mb={"4%"}
+                    pb={"2%"}
+                    color={"white"}
                     borderBottomWidth="1px"
                     borderBottomColor="gray.700"
                 >
                     Playlists
                 </Text>
                 <Box
-                    h="85%"
+                    h="75%"
                     overflowY="scroll"
                     bg="gray.700"
-                    p={2}
                     borderRadius="md"
                     css={{
                         "&::-webkit-scrollbar": {
@@ -160,17 +154,15 @@ const LibraryComponent = () => {
                         },
                     }}
                 >
-                    <Box
-                        h={'100%'}
-                    >
+                    <Box h={"100%"}>
                         {Playlists?.length > 0 ? (
                             Playlists.map((playlist) => (
                                 <Box
                                     key={playlist?.id}
-                                    p={1}
+                                    p={"1%"}
                                     bg="gray.700"
                                     rounded="md"
-                                    mb={2}
+                                    mb={"1%"}
                                     _hover={{
                                         bg: "gray.600",
                                         transform: "scale(1.03)",
@@ -185,33 +177,33 @@ const LibraryComponent = () => {
                             ))
                         ) : (
                             <Box
-                                p={3}
+                                p={"2%"}
                                 bg="gray.800"
                                 rounded="md"
                                 borderWidth="2px"
                                 borderColor="teal.400"
                                 textAlign="center"
-                                    color="white"
-                                    h={'100%'}
-                                
+                                color="white"
+                                h={"100%"}
                             >
                                 <Text
-                                    mb={4}
-                                        fontSize="lg"
-                                        textAlign={'center'}
+                                    mb={"3%"}
+                                    fontSize="1.2vw"
+                                    textAlign={"center"}
                                 >
-                                    No playlists available. Create a new playlist!
+                                    No playlists available. Create a new
+                                    playlist!
                                 </Text>
                                 <Button
-                                    colorScheme="teal"
-                                        size="md"
-                                        mb={2}
                                     onClick={handleCreatePlaylist}
+                                    leftIcon={<MdLibraryAdd />}
+                                    colorScheme="teal"
+                                    variant="outline"
                                     _hover={{
                                         bg: "teal.600",
-                                        transform: "scale(1.05)",
+                                        color: "white",
                                     }}
-                                    transition="all 0.2s ease-in-out"
+                                    size="sm"
                                 >
                                     Create Playlist
                                 </Button>
@@ -223,5 +215,7 @@ const LibraryComponent = () => {
         </Flex>
     );
 };
+
+
 
 export default LibraryComponent;
