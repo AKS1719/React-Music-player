@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Button, Flex, HStack, Input, Text } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { CiSearch } from "react-icons/ci";
@@ -10,6 +10,10 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 
 
     const dispatch = useDispatch();
+
+    useEffect(()=>{
+        console.log('rerender ')
+    },[])
 
     const handleSubmit = async (e) => {
         e.preventDefault()

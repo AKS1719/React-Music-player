@@ -4,14 +4,15 @@ import conf from "../conf/conf.js";
 import { trimTolength } from "../conf/utlis.js";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaCirclePlay } from "react-icons/fa6";
+import {playSong} from "../store/playerSlice.js"
 
 const NewlyAddedSongs = () => {
 	const [songs, setSongs] = useState([]);
 	const navigate = useNavigate();
 	const authStatus = useSelector((state) => state.auth.status);
-
+	const dispatch = useDispatch()
 	useEffect(() => {
 		fetchLatestSongs();
 	}, []);
@@ -112,6 +113,7 @@ const NewlyAddedSongs = () => {
 							borderColor={"gray.700"}
 							overflow={"hidden"}
 							transition={"transform 0.2s"}
+							onClick={()=>{dispatch(playSong(song))}}
 							_hover={{
                                 cursor:'pointer',
 								transform: "scale(1.05)", // Slightly scale the entire box on hover
@@ -121,7 +123,6 @@ const NewlyAddedSongs = () => {
 							p={2}
 							minW={"160px"}
 							flexShrink={0}
-							onClick={handleSongClick}
 						>
 							<Avatar
 								src={getImageUrl(song)}

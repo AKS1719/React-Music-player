@@ -144,17 +144,31 @@ const getSongs = asyncHandler(async (req, res) => {
 });
 
 const getSongsByName = asyncHandler(async (req, res) => {
-	const { searchTerm } = req.query;
-	const term = new RegExp(searchTerm, "i");
-	const songs = await Song.find({
-		$or: [{ songName: { $regex: term } }, { artist: { $regex: term } }],
-	});
+    const { searchTerm } = req.query;
+    const term = new RegExp(searchTerm, "i");
 
-	if (!Array.isArray(songs) || songs.length === 0) {
-		throw new ApiError(404, "No songs available");
-	}
-	return res.status(200).json(new ApiResponse(200, songs, "Songs found "));
+    // Find songs matching the search term
+    let songs = await Song.find({
+        $or: [{ songName: { $regex: term } }, { artist: { $regex: term } }],
+    });
+
+    // If no songs are found, fetch random songs
+    if (!Array.isArray(songs) || songs.length === 0) {
+        songs = await Song.aggregate([
+            { $sample: { size: 10 } } // Select 10 random songs
+        ]);
+        
+        // If still no songs are found, throw a not found error
+        if (songs.length === 0) {
+            throw new ApiError(404, "No songs available");
+        }
+
+        return res.status(200).json(new ApiResponse(200, songs, "No matching songs found, showing random songs"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, songs, "Songs found"));
 });
+
 
 export default {
 	addSong,

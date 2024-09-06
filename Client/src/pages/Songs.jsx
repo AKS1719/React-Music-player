@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Header, Player, Sidebar } from "../components";
 import { Avatar, Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import conf from "../conf/conf";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { playSong } from "../store/playerSlice";
 const Songs = () => {
     const [songs, setSongs] = useState([]);
     const authStatus = useSelector(state=>state.auth.status)
     const searchedSongs = useSelector(state=>state.search.searchData)
-
+    const dispatch = useDispatch()
     
     useEffect(() => {
         fetchLatestSongs();
@@ -101,13 +101,14 @@ const Songs = () => {
                                 as="section"
                                 border={"1px solid"}
                                 borderColor={"gray.700"}
+                                cursor={'pointer'}
                                 bg={"gray.800"}
                                 w={"100%"}
                                 p={4}
                                 mx={'auto'}
                                 borderRadius={'10px'}
                                 key={song._id}
-                                onClick={handleSongClick}
+                                onClick={()=>{dispatch(playSong(song))}}
                             >
                                 <HStack>
                                     <Avatar

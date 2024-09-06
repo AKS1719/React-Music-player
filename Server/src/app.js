@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.use(
     cors({
-        origin: ["https://vaiaksh-music.vercel.app/", "http://localhost:5173"],
+        origin: ["https://vaiaksh-music.vercel.app", "http://localhost:5173"],
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     })
