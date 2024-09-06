@@ -1,10 +1,44 @@
-import React from "react";
-import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
-
-const Header = ({ isSearchPage, playlistName, artist, album }) => {
+import React, { useState } from "react";
+import { Box, Button, Flex, HStack, Input, Text } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { CiSearch } from "react-icons/ci";
+import conf from "../conf/conf";
+import { searched } from "../store/searchSlice";
+const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
     const authStatus = useSelector((state) => state.auth.status);
+    const [searchTerm, setsearchTerm] = useState("")
 
+
+    const dispatch = useDispatch();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if(forPage && forPage==="songs"){
+            try {
+                const res = await fetch(`${conf.backendUrl}/songs/searchSongByName?searchTerm=${searchTerm}`,
+                    {
+                        credentials:'include'
+                    }
+                )
+                
+                if(!res.ok){
+                    const er = await res.json();
+                    throw new Error(er.message)
+                }
+                const reponse = await res.json();
+
+                if(reponse && reponse.data){
+                    dispatch(searched({
+                        forPage,
+                        searchData:[...reponse.data]
+                    }))
+                }
+                
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
     return (
         <Box
             as="header"
@@ -21,34 +55,49 @@ const Header = ({ isSearchPage, playlistName, artist, album }) => {
             justifyContent="space-between"
             boxShadow="lg"
         >
-            {authStatus && isSearchPage && (
+            {isSearchPage && (
                 <Box width={"40%"}>
-                    <form>
-                        <HStack spacing={"2%"}>
+                    <form onSubmit={handleSubmit}>
+                        <Flex
+                            bg={"white"}
+                            borderRadius={"20px"}
+                        >
                             <Input
-                                w={"70%"}
+                                w={"100%"}
                                 bg={"white"}
                                 placeholder="Search"
+                                onChange={(e)=>{setsearchTerm(e.target.value)}}
                                 color={"black"}
                                 _placeholder={{ color: "gray.500" }}
-                                borderRadius="8px"
-                                focusBorderColor="blue.500"
+                                borderRadius="20px"
+                                p={5}
+                                border={"0px"}
+                                _hover={{
+                                    border: "0px",
+                                    borderColor: "white",
+                                }}
+                                _focus={{
+                                    boxShadow: "none",
+                                    outline: "none",
+                                }}
+                                focusBorderColor="transparent" // To ensure no border color is applied
                             />
+
                             <Button
                                 type="submit"
                                 bg={"blue.500"}
                                 color={"white"}
                                 _hover={{ bg: "blue.400" }}
-                                borderRadius="8px"
+                                borderRadius="20px"
                             >
-                                Search
+                                <CiSearch />
                             </Button>
-                        </HStack>
+                        </Flex>
                     </form>
                 </Box>
             )}
 
-            {authStatus && (playlistName || artist || album) && (
+            {(playlistName || artist || album) && (
                 <Box
                     textAlign="right"
                     flex="1"

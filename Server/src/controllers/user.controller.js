@@ -92,6 +92,80 @@ const loginUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(201, finalUser, "User Login Success"));
 });
 
+
+const registerWithGoogle = asyncHandler(async(req,res)=>{
+
+    const {name, email, emailVerified, avatar, phoneNumber, username, password} = req.body;
+
+    if (!email || !username || !password || !phoneNumber || !name || !password) {
+        throw new ApiError(404, "Missing Credentials");
+    }
+    const emailExist = await User.findOne({ email });
+    if (emailExist) {
+        throw new ApiError(403, "Email already registered with other user");
+    }
+    const usernameExist = await User.findOne({ username });
+    if (usernameExist) {
+        throw new ApiError(403, "Username already registered with other user");
+    }
+    const userExist = await User.findOne({ phoneNumber });
+    if (userExist) {
+        throw new ApiError(
+            403,
+            "Phone Number already registered with other user"
+        );
+    }
+    const user = await User.create({
+        name,
+        email,
+        password,
+        phoneNumber,
+        username,
+        avatar,
+        isEmailVerified:emailVerified
+
+    });
+    if (!user) {
+        throw new ApiError(500, "Error occured while Registering user user");
+    }
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    const finalUser = await User.findById(user._id)
+        .select("-password -refreshToken")
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .json(new ApiResponse(200, finalUser, "User creation Success"));
+
+
+})
+
+const loginWithGoogle = asyncHandler(async(req,res)=>{
+
+    const {email} = req.body;
+    console.log(email)
+
+    const user = await User.findOne({email});
+
+    if(!user){
+        throw new ApiError(404, "User not found")
+    }
+
+    let finalUser = await User.findById(user._id)
+        .select("-password -refreshToken")
+    
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    return res
+        .status(201)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie("refreshToken", refreshToken, refreshTokenOptions)
+        .json(new ApiResponse(201, finalUser, "User Login Success"));
+
+
+})
+
+
 const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
@@ -227,7 +301,9 @@ const getArtistList = asyncHandler(async (req, res) => {
 
 export default {
     registerUser,
+    registerWithGoogle,
     loginUser,
+    loginWithGoogle,
     logoutUser,
     changeUserPassword,
     getCurrentUser,

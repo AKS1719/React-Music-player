@@ -50,17 +50,24 @@ const ArtistsComponent = () => {
                 },
             }}
         >
+
+            <Text fontSize={'1.8vw'} fontWeight={'bold'}
+            mb={2}>Artists</Text>
+
             {artists.length > 0 ? (
                 <Flex
                     direction={"row"}
                     gap={4}
                     minWidth={"fit-content"}
+                    justifyContent={'space-around'}
                 >
                     {artists.slice(0, 5).map((artist) => (
                         <Box
                             key={artist._id}
-                            bg={"gray.700"}
+                            bg={"gray.800"}
                             borderRadius={"md"}
+                            borderWidth={'1px'}
+                            borderColor={'gray.700'}
                             shadow={"md"}
                             overflow={"hidden"}
                             transition={"transform 0.2s"}

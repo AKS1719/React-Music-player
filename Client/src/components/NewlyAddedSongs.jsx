@@ -1,121 +1,174 @@
 import React, { useState, useEffect } from "react";
-import { Box, Image, Text, Flex } from "@chakra-ui/react";
+import { Box, Image, Text, Flex, Button, Avatar } from "@chakra-ui/react";
 import conf from "../conf/conf.js";
-import { trimTolength } from "../conf/utlis.js"
+import { trimTolength } from "../conf/utlis.js";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { FaCirclePlay } from "react-icons/fa6";
 
 const NewlyAddedSongs = () => {
-    const [songs, setSongs] = useState([]);
+	const [songs, setSongs] = useState([]);
+	const navigate = useNavigate();
+	const authStatus = useSelector((state) => state.auth.status);
 
-    useEffect(() => {
-        fetchLatestSongs();
-    }, []);
+	useEffect(() => {
+		fetchLatestSongs();
+	}, []);
 
-    const fetchLatestSongs = async () => {
-        try {
-            const response = await fetch(
-                `${conf.backendUrl}/songs/getSongList`,
-                {
-                    credentials: "include",
-                }
-            );
-            const res = await response.json();
-            if (res.statusCode >= 400) {
-                console.log(res);
-                throw new Error(res.message);
-            }
-            setSongs(res.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+	const fetchLatestSongs = async () => {
+		try {
+			const response = await fetch(
+				`${conf.backendUrl}/songs/getSongList`,
+				{
+					credentials: "include",
+				}
+			);
+			const res = await response.json();
+			if (res.statusCode >= 400) {
+				console.log(res);
+				throw new Error(res.message);
+			}
+			setSongs(res.data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-    // Function to get the image URL, either from the thumbnail or a generated placeholder
-    const getImageUrl = (song) => {
-        if (song.songThumbnailUrl) {
-            return song.songThumbnailUrl;
-        }
-        // Generate a placeholder image using a service like via.placeholder.com or other dynamic services
-        const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
-            song.songName
-        )}`;
-        return placeholderImage;
-    };
+	// Function to get the image URL, either from the thumbnail or a generated placeholder
+	const getImageUrl = (song) => {
+		if (song.songThumbnailUrl) {
+			return song.songThumbnailUrl;
+		}
+		// Generate a placeholder image using a service like via.placeholder.com or other dynamic services
+		const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
+			song.songName
+		)}`;
+		return placeholderImage;
+	};
 
+	const handleSongClick = async () => {
+		if (!authStatus) {
+			alert("Please login to listen the songs");
+		}
+	};
 
-    return (
-        <Box
-            h={"37%"}
-            w={"full"}
-            color={"white"}
-            p={4}
-            overflowX={"auto"}
-            css={{
-                "&::-webkit-scrollbar": {
-                    height: "8px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: "#4A5568",
-                    borderRadius: "8px",
-                },
-                "&::-webkit-scrollbar-thumb:hover": {
-                    backgroundColor: "#2D3748",
-                },
-            }}
-        >
-            {songs.length > 0 ? (
-                <Flex
-                    direction={"row"}
-                    gap={4}
-                    // w={'40%'}
-                    justifyContent={'space-around'}
-                    // minWidth={"fit-content"} // Ensures the content won't shrink below its content size
-                >
-                    {songs.slice(0, 5).map((song) => (
-                        <Box
-                            key={song._id}
-                            bg={"gray.700"}
-                            borderRadius={"md"}
-                            borderWidth={'1px'}
-                            shadow={"md"}
-                            borderColor={'gray.600'}
-                            overflow={"hidden"}
-                            transition={"transform 0.2s"}
-                            _hover={{ transform: "scale(1.05)" }}
-                            textAlign={"center"}
-                            p={2}
-                            minW={"160px"} // Minimum width of each song card
-                            flexShrink={0} // Prevents the box from shrinking
-                        >
-                            <Image
-                                src={getImageUrl(song)}
-                                alt={song.songName}
-                                boxSize={"100px"}
-                                objectFit={"cover"}
-                                mx={"auto"}
-                            />
-                            <Text
-                                mt={2}
-                                fontSize={"lg"}
-                                fontWeight={"bold"}
-                                noOfLines={1}
-                            >
-                                {trimTolength(song.songName,15)}
-                            </Text>
-                            <Text
-                                fontSize={"sm"}
-                                color={"gray.300"}
-                                noOfLines={1} // Ensures artist name also doesn't overflow
-                            >
-                                {trimTolength(song.artist,15) || "Unknown Artist"}
-                            </Text>
-                        </Box>
-                    ))}
-                </Flex>
-            ) : (
-                <Text>No songs available</Text>
-            )}
-        </Box>
-    );
+	return (
+		<Box
+			h={"37%"}
+			w={"full"}
+			color={"white"}
+			p={2}
+			overflowX={"auto"}
+			overflowY={"auto"}
+			css={{
+				"&::-webkit-scrollbar": {
+					width: "5px",
+					borderRadius: "10px",
+				},
+				"&::-webkit-scrollbar-thumb": {
+					background: "#319795", // teal.500 equivalent
+					borderRadius: "10px",
+				},
+				"&::-webkit-scrollbar-track": {
+					background: "#ffffff",
+					borderRadius: "10px",
+				},
+			}}
+		>
+			<Flex justifyContent={"space-between"}>
+				<Text
+					fontSize={"1.8vw"}
+					fontWeight={"bold"}
+					mb={2}
+				>
+					Songs
+				</Text>
+				<Text
+					as={"button"}
+					onClick={() => {
+						navigate("/songs");
+					}}
+					display={"flex"}
+					alignItems={"center"}
+				>
+					see more <MdOutlineKeyboardArrowDown />
+				</Text>
+			</Flex>
+			{songs.length > 0 ? (
+				<Flex
+					direction={"row"}
+					gap={4}
+					justifyContent={"space-around"}
+				>
+					{songs.slice(0, 5).map((song) => (
+						<Box
+							key={song._id}
+							position={'relative'}
+							bg={"gray.800"}
+							borderRadius={"md"}
+							borderWidth={"1px"}
+							shadow={"md"}
+							borderColor={"gray.700"}
+							overflow={"hidden"}
+							transition={"transform 0.2s"}
+							_hover={{
+                                cursor:'pointer',
+								transform: "scale(1.05)", // Slightly scale the entire box on hover
+                                "& .play-icon": { opacity: 1, transform: "translate(-30%, -80%)" }
+							}}
+							textAlign={"center"}
+							p={2}
+							minW={"160px"}
+							flexShrink={0}
+							onClick={handleSongClick}
+						>
+							<Avatar
+								src={getImageUrl(song)}
+								alt={song.songName}
+								boxSize={"100px"}
+								objectFit={"cover"}
+								mx={"auto"}
+							/>
+							<Text
+								mt={2}
+								fontSize={"lg"}
+								fontWeight={"bold"}
+								noOfLines={1}
+							>
+								{trimTolength(song.songName, 15)}
+							</Text>
+							<Text
+								fontSize={"sm"}
+								color={"gray.300"}
+								noOfLines={1}
+							>
+								{trimTolength(song.artist, 15) || "Unknown Artist"}
+							</Text>
+
+							{/* Play Icon */}
+							<Box
+								className="play-icon" // Target this in the _hover above
+								position={'absolute'}
+								color={'teal.400'}
+								fontSize={'6xl'}
+                                bg={'white'}
+                                borderRadius={'100%'}
+								right={'0%'}
+								bottom={'0%'}
+								opacity={0} // Initially hidden
+								transition="opacity 0.3s ease, transform 0.3s ease" // Smooth transition
+							>
+								<FaCirclePlay />
+							</Box>
+						</Box>
+					))}
+				</Flex>
+			) : (
+				<Text>No songs available</Text>
+			)}
+		</Box>
+	);
 };
 
 export default NewlyAddedSongs;

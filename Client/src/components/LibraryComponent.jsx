@@ -41,7 +41,7 @@ const LibraryComponent = () => {
                 borderBottomWidth="1px"
                 borderBottomColor="gray.700"
                 mb={"4%"}
-                p={'2%'}
+                p={"2%"}
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
@@ -63,6 +63,7 @@ const LibraryComponent = () => {
                     variant="outline"
                     _hover={{ bg: "teal.600", color: "white" }}
                     transition="background-color 0.2s ease-in-out"
+                    onClick={handleCreatePlaylist}
                 />
             </Box>
 
@@ -138,20 +139,21 @@ const LibraryComponent = () => {
                 </Text>
                 <Box
                     h="75%"
-                    overflowY="scroll"
                     bg="gray.700"
                     borderRadius="md"
+                    overflowY={"auto"}
                     css={{
                         "&::-webkit-scrollbar": {
                             width: "7px",
                             borderRadius: "10px",
                         },
                         "&::-webkit-scrollbar-thumb": {
-                            background: "teal.500",
+                            background: "#319795", // teal.500 equivalent
                             borderRadius: "10px",
                         },
                         "&::-webkit-scrollbar-track": {
-                            background: "gray.600",
+                            background: "#ffffff",
+                            borderRadius: "10px",
                         },
                     }}
                 >
