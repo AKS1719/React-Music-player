@@ -1,12 +1,12 @@
 {
     "rewrites":[
         {
-            "source":"/(.*)",
-            "destination":"/"
-        },
-        {
             "source": "/__/auth/(.*)",
             "destination": "https://redseat.firebaseapp.com/__/auth/$1"
-          }
+        },
+        {
+            "source":"/(.*)",
+            "destination":"/"
+        }
     ]
 }
