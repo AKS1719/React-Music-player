@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     song: null,
     currTime:0,
+    vol:0.5,
 }
 
 const playerSlice = createSlice({

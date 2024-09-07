@@ -31,6 +31,8 @@ const Signup = () => {
 		handleSubmit: handleSubmitRegular,
 		formState: { errors: errorsRegular },
 	} = useForm();
+	
+	const [error, seterror] = useState('')
 
 	// Form hooks for Google sign-in form
 	const {
@@ -40,6 +42,7 @@ const Signup = () => {
 	} = useForm();
 	const [googleRecivedData, setGoogleRecivedData] = useState(null);
 	const onSubmit = async (data) => {
+		seterror("")
 		try {
 			const res = await fetch(`${conf.backendUrl}/users/register`, {
 				method: "POST",
@@ -61,11 +64,13 @@ const Signup = () => {
 				dispatch(markNotsigninIn());
 			}
 		} catch (error) {
+			seterror(error.message)
 			console.error("Error during sign-up:", error);
 		}
 	};
 
 	const onSubmit2 = async (data) => {
+		seterror("")
 		const meged = {...googleRecivedData, ...data}
 		try {
 			const res = await fetch(`${conf.backendUrl}/users/registerWithGoogle`,
@@ -86,11 +91,13 @@ const Signup = () => {
 			dispatch(login(data.data))
 			dispatch(markNotsigninIn());
 		} catch (error) {
+			seterror(error.message)
 			console.log(error)
 		}
 	};
 
 	const handleSignInWithGoogle = async () => {
+		seterror("")
 		try {
 			const provider = new GoogleAuthProvider();
 			const result = await signInWithPopup(auth, provider);
@@ -103,6 +110,7 @@ const Signup = () => {
 				phoneNumber: result.user.phoneNumber,
 			});
 		} catch (error) {
+			seterror(error.message)
 			console.log(error);
 		}
 	};
@@ -110,6 +118,7 @@ const Signup = () => {
 	useEffect(() => {
 		console.log(googleRecivedData);
 	}, [googleRecivedData]);
+
 
 	return (
 		<Box
@@ -137,6 +146,11 @@ const Signup = () => {
 			>
 				<CloseIcon style={{ color: "white" }} />
 			</Flex>
+
+			{
+				error && 
+				<Text color={'crimson'}>{error?.message || error}</Text>
+			}
 			{!googleRecivedData && (
 				<>
 					<Text
@@ -191,6 +205,8 @@ const Signup = () => {
 									type="password"
 									{...registerRegular("password", {
 										required: "Password is required",
+										minLength: { value: 8, message: "Minimum 8 characters required" }
+
 									})}
 									placeholder="Enter your password"
 								/>
@@ -232,7 +248,7 @@ const Signup = () => {
 								<Input
 									type="tel"
 									{...registerRegular("phoneNumber", {
-										required: "Password is required",
+										required: "Phone number is required",
 										validate: {
 											matchPattern: (value) =>
 												/^(\+\d{1,3}[- ]?)?\d{10}$/.test(
@@ -401,6 +417,8 @@ const Signup = () => {
 									type="password"
 									{...registerGoogle("password", {
 										required: "Password is required",
+										minLength: { value: 8, message: "Minimum 8 characters required" }
+
 									})}
 									placeholder="Set your password"
 								/>

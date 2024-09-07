@@ -22,19 +22,30 @@ import {
     FiVolume2,
 } from "react-icons/fi";
 import { useSelector } from "react-redux";
+import { gsap } from "gsap";
+import { trimTolength } from "../conf/utlis";
 
 const Player = ({ playlist }) => {
     const song = useSelector((state) => state.player.song);
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(true);
-    const [volume, setVolume] = useState(0.5); // Initial volume
+    const [volume, setVolume] = useState(0.5);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+
+    useEffect(() => {
+        if (song !== null) {
+            setIsPlaying(true);
+            startAnimations();  // Start animations when a song is loaded
+        } else {
+            setIsPlaying(false);
+            stopAnimations();   // Stop animations when no song is loaded
+        }
+    }, [song]);
 
     const formatTime = (t) => {
         let mm = '00';
         let ss = '00';
-
         if (t > 60) {
             mm = Math.floor(t / 60);
             if (mm < 10) {
@@ -57,8 +68,10 @@ const Player = ({ playlist }) => {
     const togglePlayPause = () => {
         if (isPlaying) {
             audioRef.current.pause();
+            stopAnimations();
         } else {
             audioRef.current.play();
+            startAnimations();
         }
         setIsPlaying(!isPlaying);
     };
@@ -73,7 +86,7 @@ const Player = ({ playlist }) => {
     };
 
     const handleVolumeChange = (value) => {
-        setVolume(value / 100); // Convert slider value to a scale of 0 to 1
+        setVolume(value / 100);
     };
 
     const handleLoadedMetadata = () => {
@@ -84,11 +97,21 @@ const Player = ({ playlist }) => {
         if (song?.songThumbnailUrl) {
             return song?.songThumbnailUrl;
         }
-        // Generate a placeholder image using a service like via.placeholder.com or other dynamic services
-        const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
-            song?.songName
-        )}`;
+        const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(song?.songName)}`;
         return placeholderImage;
+    };
+
+    // GSAP animation methods
+    const startAnimations = () => {
+        gsap.to(".album-cover", { rotation: 360, repeat: -1, duration: 5, ease: "linear" });
+        // gsap.to(".controls", { y: 10, repeat: -1, yoyo: true, duration: 1, ease: "power1.inOut" });
+        // gsap.to(".volume-control", { scale: 1.1, repeat: -1, yoyo: true, duration: 1, ease: "power1.inOut" });
+    };
+
+    const stopAnimations = () => {
+        gsap.to(".album-cover", { rotation: 0, duration: 1 });
+        // gsap.to(".controls", { y: 0, duration: 1 });
+        // gsap.to(".volume-control", { scale: 1, duration: 1 });
     };
 
     return (
@@ -120,21 +143,22 @@ const Player = ({ playlist }) => {
                         alt={song?.songName || "Unknown"}
                         boxSize="50px"
                         borderRadius="md"
+                        className="album-cover"
                     />
 
                     {/* Song Details */}
                     <Box ml={4}>
                         <Text fontWeight="bold" color="white">
-                            {song?.songName || "Unknown"}
+                            {trimTolength(song?.songName || "Unknown")}
                         </Text>
-                        <Text fontSize="sm" color="gray.400">
-                            {song?.artist || "Unknown"}
+                        <Text fontSize="sm" color="gray.400" title={song?.artist}>
+                            {trimTolength(song?.artist || "Unknown")}
                         </Text>
                     </Box>
                 </Box>
 
                 {/* Player Controls */}
-                <Flex align="center">
+                <Flex align="center" className="controls">
                     <IconButton
                         aria-label="Shuffle"
                         icon={<FiShuffle />}
@@ -184,7 +208,6 @@ const Player = ({ playlist }) => {
                         max={duration}
                         onChange={handleSeek}
                         w="200px"
-                        // ml={4}
                     >
                         <SliderTrack bg="gray.600">
                             <SliderFilledTrack bg="orange.400" />
@@ -195,7 +218,7 @@ const Player = ({ playlist }) => {
                 </Flex>
 
                 {/* Volume Control */}
-                <Flex align="center" ml={4}>
+                <Flex align="center" ml={4} className="volume-control">
                     <IconButton
                         aria-label="Like"
                         icon={<FiHeart />}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
 	Box,
@@ -32,8 +32,9 @@ const Login = () => {
 		handleSubmit,
 		formState: { errors },
 	} = useForm();
-
+	const [error, seterror] = useState('')
 	const onSubmit = async (data) => {
+		seterror("")
 		console.log(data)
 		try {
 		    const res = await fetch(`${conf.backendUrl}/users/login`,
@@ -57,11 +58,13 @@ const Login = () => {
 				dispatch(markNotLogin())
 			}
 		} catch (error) {
-		    console.error("Error during sign-up:", error.response.data.message);
+			seterror(error)
+		    console.error("Error during sign-up:", error);
 		}
 	};
 
 	const handleSignInWithGoogle = async () => {
+		seterror("")
 		try {
 			const provider = new GoogleAuthProvider();
 			const result = await signInWithPopup(auth, provider);
@@ -85,6 +88,7 @@ const Login = () => {
             dispatch(login(data.data));
             dispatch(markNotLogin())
 		} catch (error) {
+			seterror(error)
 			console.log(error);
 		}
 	};
@@ -108,6 +112,10 @@ const Login = () => {
 			}}>
 				<CloseIcon style={{color:'white'}}/>
 			</Flex>
+			{
+				error && 
+				<Text color={'crimson'}>{error.message} &nbsp; {error.message==="User not found"? "Try Registering" : ""} </Text>
+			}
 			<Text
 				mb={3}
 				fontSize={{base:"1.5rem",md:"2.3rem"}}

@@ -66,7 +66,7 @@ const Sidebar = () => {
 
     return (
         <Box
-        overflowY={'auto'}
+        overflowY={'aut '}
             bg={"gray.900"}
             w={"20%"}
             height={"100%"}
@@ -182,7 +182,7 @@ const Sidebar = () => {
                     <Box
                         display={"flex"}
                         alignItems={"center"}
-                        mb={"6%"}
+                        mb={"3%"}
                         onClick={() => {
                             console.log("Make a profile page.");
                         }}
@@ -210,7 +210,7 @@ const Sidebar = () => {
                         _hover={{
                             bg: "gray.700",
                         }}
-                        mb={"4"}
+                        mb={"2"}
                     >
                         <FiSearch /> &nbsp; Search
                     </Button>
