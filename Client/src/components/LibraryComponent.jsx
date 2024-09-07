@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Flex, Text, IconButton, HStack, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, IconButton, HStack, Button, baseTheme } from "@chakra-ui/react";
 import { IoLibrarySharp } from "react-icons/io5";
 import { MdLibraryAdd } from "react-icons/md";
 import { FcLike } from "react-icons/fc";
@@ -8,9 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PlaylistComponent from "./PlaylistComponent";
 const LibraryComponent = () => {
-    const [Playlists, setPlaylists] = useState([]);
     const navigate = useNavigate();
     const authStatus = useSelector((state) => state.auth.status);
+
+    const Playlists = useSelector(state => state.auth.userData?.playlists) || [];
 
     const handleCreatePlaylist = async () => {
         if (!authStatus) {
@@ -47,7 +48,7 @@ const LibraryComponent = () => {
                 justifyContent="space-between"
             >
                 <Text
-                    fontSize="1.2vw"
+                    fontSize="xl"
                     fontWeight="bold"
                     color="white"
                     display="flex"
@@ -81,9 +82,9 @@ const LibraryComponent = () => {
                 transition="all 0.2s ease-in-out"
                 cursor="pointer"
             >
-                <FcLike size="1.2vw" />
+                <FcLike size="25px" />
                 <Text
-                    fontSize={"1vw"}
+                    fontSize={"md"}
                     color="white"
                     fontWeight="semibold"
                 >
@@ -106,11 +107,11 @@ const LibraryComponent = () => {
                 cursor="pointer"
             >
                 <GoIssueTracks
-                    size="1.2vw"
+                    size="25px"
                     color="white"
                 />
                 <Text
-                    fontSize={"1vw"}
+                    fontSize={"md"}
                     color="white"
                     fontWeight="semibold"
                 >
@@ -128,7 +129,7 @@ const LibraryComponent = () => {
             >
                 <Text
                     fontWeight="bold"
-                    fontSize="1.2vw"
+                    fontSize="xl"
                     mb={"4%"}
                     pb={"2%"}
                     color={"white"}
@@ -191,7 +192,7 @@ const LibraryComponent = () => {
                             >
                                 <Text
                                     mb={"3%"}
-                                    fontSize="1.2vw"
+                                    fontSize="md"
                                     textAlign={"center"}
                                 >
                                     No playlists available. Create a new

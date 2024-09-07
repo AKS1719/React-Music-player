@@ -1,38 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Box, Image, Text, Flex, Button, Avatar } from "@chakra-ui/react";
+import { Box, Image, Text, Flex, Button, Avatar, Skeleton, SkeletonText, SkeletonCircle } from "@chakra-ui/react";
 import conf from "../conf/conf.js";
 import { trimTolength } from "../conf/utlis.js";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaCirclePlay } from "react-icons/fa6";
-import {playSong} from "../store/playerSlice.js"
+import { playSong } from "../store/playerSlice.js";
 
 const NewlyAddedSongs = () => {
 	const [songs, setSongs] = useState([]);
+	const [isLoading, setIsLoading] = useState(true); // Add loading state
 	const navigate = useNavigate();
 	const authStatus = useSelector((state) => state.auth.status);
-	const dispatch = useDispatch()
+	const dispatch = useDispatch();
+
 	useEffect(() => {
 		fetchLatestSongs();
 	}, []);
 
 	const fetchLatestSongs = async () => {
 		try {
-			const response = await fetch(
-				`${conf.backendUrl}/songs/getSongList`,
-				{
-					credentials: "include",
-				}
-			);
+			const response = await fetch(`${conf.backendUrl}/songs/getSongList`, {
+				credentials: "include",
+			});
 			const res = await response.json();
 			if (res.statusCode >= 400) {
 				console.log(res);
 				throw new Error(res.message);
 			}
 			setSongs(res.data);
+			setIsLoading(false); // Stop loading when data is fetched
 		} catch (error) {
 			console.log(error);
+			setIsLoading(false); // Stop loading even if there's an error
 		}
 	};
 
@@ -41,17 +42,10 @@ const NewlyAddedSongs = () => {
 		if (song.songThumbnailUrl) {
 			return song.songThumbnailUrl;
 		}
-		// Generate a placeholder image using a service like via.placeholder.com or other dynamic services
 		const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
 			song.songName
 		)}`;
 		return placeholderImage;
-	};
-
-	const handleSongClick = async () => {
-		if (!authStatus) {
-			alert("Please login to listen the songs");
-		}
 	};
 
 	return (
@@ -78,11 +72,7 @@ const NewlyAddedSongs = () => {
 			}}
 		>
 			<Flex justifyContent={"space-between"}>
-				<Text
-					fontSize={"1.8vw"}
-					fontWeight={"bold"}
-					mb={2}
-				>
+				<Text fontSize={"2xl"} fontWeight={"bold"} mb={2}>
 					Songs
 				</Text>
 				<Text
@@ -96,16 +86,13 @@ const NewlyAddedSongs = () => {
 					see more <MdOutlineKeyboardArrowDown />
 				</Text>
 			</Flex>
-			{songs.length > 0 ? (
-				<Flex
-					direction={"row"}
-					gap={4}
-					justifyContent={"space-around"}
-				>
-					{songs.slice(0, 5).map((song) => (
+
+			{/* Show Skeleton Loader when loading */}
+			{isLoading ? (
+				<Flex direction={"row"} gap={4} justifyContent={"space-around"}>
+					{[...Array(5)].map((_, index) => (
 						<Box
-							key={song._id}
-							position={'relative'}
+							key={index}
 							bg={"gray.800"}
 							borderRadius={"md"}
 							borderWidth={"1px"}
@@ -113,11 +100,36 @@ const NewlyAddedSongs = () => {
 							borderColor={"gray.700"}
 							overflow={"hidden"}
 							transition={"transform 0.2s"}
-							onClick={()=>{dispatch(playSong(song))}}
+							textAlign={"center"}
+							p={2}
+							minW={"160px"}
+							flexShrink={0}
+						>
+							<SkeletonCircle size={"100px"} mx={"auto"} />
+							<SkeletonText mt={2} noOfLines={2} spacing={4} />
+						</Box>
+					))}
+				</Flex>
+			) : songs.length > 0 ? (
+				<Flex direction={"row"} gap={4} justifyContent={"space-around"}>
+					{songs.slice(0, 5).map((song) => (
+						<Box
+							key={song._id}
+							position={"relative"}
+							bg={"gray.800"}
+							borderRadius={"md"}
+							borderWidth={"1px"}
+							shadow={"md"}
+							borderColor={"gray.700"}
+							overflow={"hidden"}
+							transition={"transform 0.2s"}
+							onClick={() => {
+								dispatch(playSong(song));
+							}}
 							_hover={{
-                                cursor:'pointer',
+								cursor: "pointer",
 								transform: "scale(1.05)", // Slightly scale the entire box on hover
-                                "& .play-icon": { opacity: 1, transform: "translate(-30%, -80%)" }
+								"& .play-icon": { opacity: 1, transform: "translate(-30%, -80%)" },
 							}}
 							textAlign={"center"}
 							p={2}
@@ -131,32 +143,23 @@ const NewlyAddedSongs = () => {
 								objectFit={"cover"}
 								mx={"auto"}
 							/>
-							<Text
-								mt={2}
-								fontSize={"lg"}
-								fontWeight={"bold"}
-								noOfLines={1}
-							>
+							<Text mt={2} fontSize={"lg"} fontWeight={"bold"} noOfLines={1}>
 								{trimTolength(song.songName, 15)}
 							</Text>
-							<Text
-								fontSize={"sm"}
-								color={"gray.300"}
-								noOfLines={1}
-							>
+							<Text fontSize={"sm"} color={"gray.300"} noOfLines={1}>
 								{trimTolength(song.artist, 15) || "Unknown Artist"}
 							</Text>
 
 							{/* Play Icon */}
 							<Box
 								className="play-icon" // Target this in the _hover above
-								position={'absolute'}
-								color={'teal.400'}
-								fontSize={'6xl'}
-                                bg={'white'}
-                                borderRadius={'100%'}
-								right={'0%'}
-								bottom={'0%'}
+								position={"absolute"}
+								color={"teal.400"}
+								fontSize={"6xl"}
+								bg={"white"}
+								borderRadius={"100%"}
+								right={"0%"}
+								bottom={"0%"}
 								opacity={0} // Initially hidden
 								transition="opacity 0.3s ease, transform 0.3s ease" // Smooth transition
 							>

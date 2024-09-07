@@ -12,9 +12,15 @@ const playerSlice = createSlice({
     reducers:{
         playSong:(state,action)=>{
             state.song = action.payload
+        },
+        setCurrTime:(state,action)=>{
+            state.currTime = action.payload.currTime
+        },
+        setVolume: (state,action)=>{
+            state.vol = action.payload.volume
         }
     }
 })
 
-export const {playSong} = playerSlice.actions;
+export const {playSong,setCurrTime,setVolume} = playerSlice.actions;
 export default  playerSlice.reducer

@@ -216,11 +216,15 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
     let finalUser = await User.findById(user._id)
         .select("-password -refreshToken")
+        .populate({
+            path: 'playlists', // Populate the 'playlists' field
+            select: 'playlistName' // Select the playlistName field from Playlist model
+        });
 
     return res
         .status(200)
         .json(
-        new ApiResponse(200,user,"Success")
+        new ApiResponse(200,finalUser,"Success")
     )
 });
 
@@ -297,7 +301,20 @@ const getArtistList = asyncHandler(async (req, res) => {
     )
 })
 
+const addToFavorites = asyncHandler(async (req,res)=>{
+    const {songId}  = req.body;
 
+    const user = await User.findById(req.user._id).select('-password -refreshToken');
+    if(!user){
+        throw new ApiError(404, "User not found");
+    }
+    user.favorites.push(songId)
+    user.save({validateBeforeSave:false})
+
+    return res.status(200).json(
+        new ApiResponse(200, user, "Successfully added to favorites")
+    )
+})
 
 export default {
     registerUser,
@@ -309,5 +326,6 @@ export default {
     getCurrentUser,
     getUserByusername,
     updateAvatar,
-    getArtistList
+    getArtistList,
+    addToFavorites,
 }

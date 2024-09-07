@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, Image, Text, Flex, Avatar } from "@chakra-ui/react";
+import { Box, Text, Flex, Avatar, Skeleton, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 import conf from "../conf/conf.js";
 
 const ArtistsComponent = () => {
     const [artists, setArtists] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchArtists();
@@ -21,14 +22,34 @@ const ArtistsComponent = () => {
             if (res.statusCode >= 400) {
                 console.log(res);
                 throw new Error(res.message);
-          }
-          setArtists(res.data.artists);
-          console.log(artists)
+            }
+            setArtists(res.data.artists);
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false); // Stop loading when data is fetched
         }
     };
 
+    const renderSkeletons = () => {
+        return Array(5).fill("").map((_, index) => (
+            <Box
+                key={index}
+                bg={"gray.800"}
+                borderRadius={"md"}
+                shadow={"md"}
+                p={2}
+                textAlign={"center"}
+                minW={"160px"}
+                flexShrink={0}
+                borderWidth={'1px'}
+                borderColor={'gray.700'}
+            >
+                <SkeletonCircle size="100px" mx={"auto"} />
+                <SkeletonText mt="4" noOfLines={1} />
+            </Box>
+        ));
+    };
 
     return (
         <Box
@@ -50,11 +71,14 @@ const ArtistsComponent = () => {
                 },
             }}
         >
+            <Text fontSize={'2xl'} fontWeight={'bold'} mb={2}>Artists</Text>
 
-            <Text fontSize={'1.8vw'} fontWeight={'bold'}
-            mb={2}>Artists</Text>
-
-            {artists.length > 0 ? (
+            {isLoading ? (
+                // Show skeleton loader when data is still loading
+                <Flex direction={"row"} gap={4} minWidth={"fit-content"} justifyContent={'space-around'}>
+                    {renderSkeletons()}
+                </Flex>
+            ) : artists.length > 0 ? (
                 <Flex
                     direction={"row"}
                     gap={4}

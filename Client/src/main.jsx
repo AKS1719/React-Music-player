@@ -5,10 +5,12 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import store from "./store/store.js";
 import { Provider } from "react-redux";
-import { Home, MusicPlayer } from "./pages/index.js";
+import { Home, MusicPlayer, Search } from "./pages/index.js";
 import { StrictMode } from "react";
 import { PageTransition } from "./components/index.js";
 import Songs from "./pages/Songs.jsx";
+import BaseLayout from "./components/Layout/BaseLayout.jsx";
+import Profile from "./pages/Profile.jsx";
 
 
 const router = createBrowserRouter([
@@ -30,7 +32,9 @@ const router = createBrowserRouter([
 				path: "music-player",
 				element: (
 					<PageTransition>
+						<BaseLayout>
 						<MusicPlayer />
+						</BaseLayout>
 					</PageTransition>
 				),
 			},
@@ -38,10 +42,32 @@ const router = createBrowserRouter([
 				path: "songs",
 				element: (
 					<PageTransition>
+						<BaseLayout>
 						<Songs />
+						</BaseLayout>
 					</PageTransition>
 				),
 			},
+			{
+				path:"search",
+				element:(
+					<PageTransition>
+						<BaseLayout>
+						<Search />
+						</BaseLayout>
+					</PageTransition>
+				)
+			},
+			{
+				path:"profile/:username",
+				element:(
+					<PageTransition>
+						<BaseLayout>
+						<Profile />
+						</BaseLayout>
+					</PageTransition>
+				)
+			}
 		],
 	},
 	{
