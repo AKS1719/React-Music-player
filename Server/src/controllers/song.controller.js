@@ -127,7 +127,7 @@ const uploadSongsBatch = asyncHandler(async (req, res) => {
 });
 
 const getSongsList = asyncHandler(async (req, res) => {
-	const songs = await Song.find().sort({ createdAt: -1 }).limit(5);
+	const songs = await Song.find().sort({ createdAt: -1 }).limit(30);
 
 	if (!Array.isArray(songs) || songs.length === 0) {
 		throw new ApiError(404, "No Songs Found");
@@ -136,7 +136,7 @@ const getSongsList = asyncHandler(async (req, res) => {
 });
 
 const getSongs = asyncHandler(async (req, res) => {
-	const songs = await Song.find().sort({ createdAt: -1 }).limit(10);
+	const songs = await Song.find().sort({ createdAt: -1 }).limit(30);
 	if (!Array.isArray(songs) || songs.length === 0) {
 		throw new ApiError(404, "No songs Found");
 	}
@@ -155,7 +155,7 @@ const getSongsByName = asyncHandler(async (req, res) => {
     // If no songs are found, fetch random songs
     if (!Array.isArray(songs) || songs.length === 0) {
         songs = await Song.aggregate([
-            { $sample: { size: 10 } } // Select 10 random songs
+            { $sample: { size: 30 } } // Select 10 random songs
         ]);
         
         // If still no songs are found, throw a not found error
