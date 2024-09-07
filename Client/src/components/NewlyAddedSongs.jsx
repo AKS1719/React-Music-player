@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Image, Text, Flex, Button, Avatar, Skeleton, SkeletonText, SkeletonCircle } from "@chakra-ui/react";
+import {
+	Box,
+	Image,
+	Text,
+	Flex,
+	Button,
+	Avatar,
+	Skeleton,
+	SkeletonText,
+	SkeletonCircle,
+} from "@chakra-ui/react";
 import conf from "../conf/conf.js";
 import { trimTolength } from "../conf/utlis.js";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
@@ -21,9 +31,12 @@ const NewlyAddedSongs = () => {
 
 	const fetchLatestSongs = async () => {
 		try {
-			const response = await fetch(`${conf.backendUrl}/songs/getSongList`, {
-				credentials: "include",
-			});
+			const response = await fetch(
+				`${conf.backendUrl}/songs/getSongList`,
+				{
+					credentials: "include",
+				}
+			);
 			const res = await response.json();
 			if (res.statusCode >= 400) {
 				console.log(res);
@@ -54,7 +67,6 @@ const NewlyAddedSongs = () => {
 			w={"full"}
 			color={"white"}
 			p={2}
-			overflowX={"auto"}
 			overflowY={"auto"}
 			css={{
 				"&::-webkit-scrollbar": {
@@ -72,7 +84,11 @@ const NewlyAddedSongs = () => {
 			}}
 		>
 			<Flex justifyContent={"space-between"}>
-				<Text fontSize={"2xl"} fontWeight={"bold"} mb={2}>
+				<Text
+					fontSize={"2xl"}
+					fontWeight={"bold"}
+					mb={2}
+				>
 					Songs
 				</Text>
 				<Text
@@ -89,7 +105,26 @@ const NewlyAddedSongs = () => {
 
 			{/* Show Skeleton Loader when loading */}
 			{isLoading ? (
-				<Flex direction={"row"} gap={4} justifyContent={"space-around"}>
+				<Flex
+					direction={"row"}
+					gap={4}
+					justifyContent={"space-around"}
+					overflowX={"auto"}
+					css={{
+						"&::-webkit-scrollbar": {
+							width: "5px",
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-thumb": {
+							background: "#319795", // teal.500 equivalent
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-track": {
+							background: "#ffffff",
+							borderRadius: "10px",
+						},
+					}}
+				>
 					{[...Array(5)].map((_, index) => (
 						<Box
 							key={index}
@@ -105,13 +140,39 @@ const NewlyAddedSongs = () => {
 							minW={"160px"}
 							flexShrink={0}
 						>
-							<SkeletonCircle size={"100px"} mx={"auto"} />
-							<SkeletonText mt={2} noOfLines={2} spacing={4} />
+							<SkeletonCircle
+								size={"100px"}
+								mx={"auto"}
+							/>
+							<SkeletonText
+								mt={2}
+								noOfLines={2}
+								spacing={4}
+							/>
 						</Box>
 					))}
 				</Flex>
 			) : songs.length > 0 ? (
-				<Flex direction={"row"} gap={4} justifyContent={"space-around"}>
+				<Flex
+					direction={"row"}
+					gap={4}
+					justifyContent={"space-around"}
+					overflowX={"auto"}
+					css={{
+						"&::-webkit-scrollbar": {
+							width: "5px",
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-thumb": {
+							background: "#319795", // teal.500 equivalent
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-track": {
+							background: "#ffffff",
+							borderRadius: "10px",
+						},
+					}}
+				>
 					{songs.slice(0, 5).map((song) => (
 						<Box
 							key={song._id}
@@ -129,7 +190,10 @@ const NewlyAddedSongs = () => {
 							_hover={{
 								cursor: "pointer",
 								transform: "scale(1.05)", // Slightly scale the entire box on hover
-								"& .play-icon": { opacity: 1, transform: "translate(-30%, -80%)" },
+								"& .play-icon": {
+									opacity: 1,
+									transform: "translate(-30%, -80%)",
+								},
 							}}
 							textAlign={"center"}
 							p={2}
@@ -143,11 +207,21 @@ const NewlyAddedSongs = () => {
 								objectFit={"cover"}
 								mx={"auto"}
 							/>
-							<Text mt={2} fontSize={"lg"} fontWeight={"bold"} noOfLines={1}>
+							<Text
+								mt={2}
+								fontSize={"lg"}
+								fontWeight={"bold"}
+								noOfLines={1}
+							>
 								{trimTolength(song.songName, 15)}
 							</Text>
-							<Text fontSize={"sm"} color={"gray.300"} noOfLines={1}>
-								{trimTolength(song.artist, 15) || "Unknown Artist"}
+							<Text
+								fontSize={"sm"}
+								color={"gray.300"}
+								noOfLines={1}
+							>
+								{trimTolength(song.artist, 15) ||
+									"Unknown Artist"}
 							</Text>
 
 							{/* Play Icon */}

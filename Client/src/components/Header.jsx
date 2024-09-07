@@ -63,6 +63,37 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 		}
 	};
 
+	const handleLogout = async () => {
+		try {
+			const response = await fetch(`${conf.backendUrl}/users/logout`, {
+				method: "POST",
+				credentials: "include",
+			});
+			if (!response.ok) {
+				const er = await response.json();
+				throw new Error(er.message);
+			}
+			dispatch(logout());
+			toast({
+				title: "Logout Successful",
+				description: "It's bad to see you go 🥹.",
+				status: "success",
+				duration: 5000,
+				isClosable: true,
+			});
+		} catch (error) {
+			console.log(error);
+			toast({
+				title: "Oops! Something Went wrong",
+				description:
+					"Due to some technical issue we are not able to log you out! SORRY for the trouble",
+				status: "error",
+				duration: 5000,
+				isClosable: true,
+			});
+		}
+	};
+
 	return (
 		<Box
 			as="header"
@@ -70,6 +101,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 			w={"100%"}
 			bg={"gray.800"}
 			p={"2%"}
+			px={'4%'}
 			color={"white"}
 			borderWidth={"1px"}
 			borderColor={"gray.700"}
@@ -168,7 +200,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 						<Avatar
 							name={userData?.name}
 							src={userData?.avatar}
-							size={["sm", "md"]}
+							size='lg'
 						/>
 					</MenuButton>
 					<MenuList
@@ -189,7 +221,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 							Profile
 						</MenuItem>
 						<MenuItem
-							onClick={() => console.log("Logout")}
+							onClick={handleLogout}
 							bg={"transparent"}
 						>
 							Logout

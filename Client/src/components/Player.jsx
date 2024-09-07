@@ -85,7 +85,7 @@ const Player = ({ playlist }) => {
 		}
 	}, [volume]);
 
-	const togglePlayPause = () => {
+	const togglePlayPause = (e) => {
 		if (song === null) {
 			alert("Select a song to play");
 			return;
@@ -97,6 +97,7 @@ const Player = ({ playlist }) => {
 			audioRef.current.play();
 			startAnimations();
 		}
+		e.stopPropagation()
 		setIsPlaying(!isPlaying);
 	};
 
@@ -537,6 +538,12 @@ const Player = ({ playlist }) => {
 												variant="ghost"
 												color="white"
 												size="lg"
+												_hover={{
+													bg:"transaprent",
+												}}
+												_focus={{
+													bg:"transparent",
+												}}
 											/>
 											<IconButton
 												aria-label="Previous"
@@ -544,6 +551,12 @@ const Player = ({ playlist }) => {
 												variant="ghost"
 												color="white"
 												size="lg"
+												_hover={{
+													bg:"transaprent"
+												}}
+												_focus={{
+													bg:"transparent"
+												}}
 											/>
 											<IconButton
 												aria-label={
@@ -568,6 +581,12 @@ const Player = ({ playlist }) => {
 												variant="ghost"
 												color="white"
 												size="lg"
+												_hover={{
+													bg:"transaprent"
+												}}
+												_focus={{
+													bg:"transparent"
+												}}
 											/>
 											<IconButton
 												aria-label="Repeat"
@@ -575,6 +594,12 @@ const Player = ({ playlist }) => {
 												variant="ghost"
 												color="white"
 												size="lg"
+												_hover={{
+													bg:"transaprent"
+												}}
+												_focus={{
+													bg:"transparent"
+												}}
 											/>
 										</Flex>
 
@@ -609,7 +634,8 @@ const Player = ({ playlist }) => {
 									{/* Volume Control */}
 									<Flex
 										align="center"
-										ml={4}
+										// ml={4}
+										justify={'center'}
 										className="volume-control"
 										mt={4}
 									>
@@ -619,6 +645,13 @@ const Player = ({ playlist }) => {
 											variant="ghost"
 											color="white"
 											size="lg"
+											_hover={{
+												bg:"transaprent"
+											}}
+											_focus={{
+												bg:"transparent"
+											}}
+											onClick={handleLike}
 										/>
 										<IconButton
 											aria-label="Add"
@@ -626,13 +659,27 @@ const Player = ({ playlist }) => {
 											variant="ghost"
 											color="white"
 											size="lg"
+											_hover={{
+												bg:"transaprent"
+											}}
+											_focus={{
+												bg:"transparent"
+											}}
+											onClick={handleAddToPlaylist}
 										/>
 										<IconButton
 											aria-label="Volume"
-											icon={<FiVolume2 />}
+											icon={!isMute ? <FiVolume2 /> : <FaVolumeMute/>}
 											variant="ghost"
 											color="white"
 											size="lg"
+											_hover={{
+												bg:"transaprent"
+											}}
+											_focus={{
+												bg:"transparent"
+											}}
+											onClick={toggleMute}
 										/>
 										<Slider
 											aria-label="Volume"

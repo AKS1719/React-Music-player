@@ -246,6 +246,7 @@ const Sidebar = () => {
 						<FiSearch /> &nbsp; Search
 					</Button>
 					<Button
+					display={{base:'none', md:'flex'}}
 						onClick={handleLogout}
 						w="full"
 						bgGradient="linear(to-r, red.400, pink.500)"
