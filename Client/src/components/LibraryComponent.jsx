@@ -21,9 +21,10 @@ const LibraryComponent = () => {
 
     return (
         <Flex
+            overflowY={'auto'}
             direction="column"
             rounded="10px"
-            h="70%"
+            h="max-content"
             as="section"
             bg="gray.800"
             borderWidth="2px"

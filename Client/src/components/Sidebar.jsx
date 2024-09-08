@@ -77,10 +77,10 @@ const Sidebar = () => {
 
 	return (
 		<Box
-			overflowY={"aut "}
+			overflowY={"auto"}
 			bg={"gray.900"}
 			w={{base:'100%', md:'20%'}}
-			height={"100%"}
+			height={"max-content"}
 			display={"flex"}
 			alignItems={"center"}
 			py={4}
@@ -143,7 +143,7 @@ const Sidebar = () => {
 					p={"4%"}
 					mb={"4%"}
 					textAlign="center"
-					h={"30%"}
+					h={'max-content'}
 				>
 					<Text
 						fontSize={["4vw", "2.5vw", "1.5vw"]} // Responsive font size

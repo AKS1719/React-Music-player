@@ -152,7 +152,7 @@ const NewlyAddedSongs = () => {
 						</Box>
 					))}
 				</Flex>
-			) : songs.length > 0 ? (
+			) : songs?.length > 0 ? (
 				<Flex
 					direction={"row"}
 					gap={4}
@@ -173,7 +173,7 @@ const NewlyAddedSongs = () => {
 						},
 					}}
 				>
-					{songs.slice(0, 5).map((song) => (
+					{songs?.slice(0, 5).map((song) => (
 						<Box
 							key={song._id}
 							position={"relative"}
@@ -185,7 +185,11 @@ const NewlyAddedSongs = () => {
 							overflow={"hidden"}
 							transition={"transform 0.2s"}
 							onClick={() => {
-								dispatch(playSong(song));
+								if (!authStatus) {
+									alert("Please login to listen to the songs");
+								} else {
+									dispatch(playSong(song));
+								}
 							}}
 							_hover={{
 								cursor: "pointer",

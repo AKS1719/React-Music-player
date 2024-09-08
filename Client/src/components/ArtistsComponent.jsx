@@ -23,7 +23,7 @@ const ArtistsComponent = () => {
                 console.log(res);
                 throw new Error(res.message);
             }
-            setArtists(res.data.artists);
+            setArtists(res?.data?.artists);
         } catch (error) {
             console.log(error);
         } finally {
@@ -78,14 +78,14 @@ const ArtistsComponent = () => {
                 <Flex direction={"row"} gap={4} minWidth={"fit-content"} justifyContent={'space-around'}>
                     {renderSkeletons()}
                 </Flex>
-            ) : artists.length > 0 ? (
+            ) : artists?.length > 0 ? (
                 <Flex
                     direction={"row"}
                     gap={4}
                     minWidth={"fit-content"}
                     justifyContent={'space-around'}
                 >
-                    {artists.slice(0, 5).map((artist) => (
+                    {artists?.slice(0, 5).map((artist) => (
                         <Box
                             key={artist._id}
                             bg={"gray.800"}
@@ -102,9 +102,9 @@ const ArtistsComponent = () => {
                             flexShrink={0}
                         >
                             <Avatar
-                                src={artist.avatar}
-                                alt={artist.name}
-                                name={artist.name}
+                                src={artist?.avatar}
+                                alt={artist?.name}
+                                name={artist?.name}
                                 boxSize={"100px"}
                                 objectFit={"cover"}
                                 mx={"auto"}
@@ -115,7 +115,7 @@ const ArtistsComponent = () => {
                                 fontWeight={"bold"}
                                 noOfLines={1}
                             >
-                                {artist.name}
+                                {artist?.name}
                             </Text>
                         </Box>
                     ))}

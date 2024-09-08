@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import MusicLoader from '../Loaders/MusicLoader';
 
 const BaseLayout = ({ children }) => {
-  const { onOpen, onClose } = useDisclosure();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const { isOpen, onOpen, onClose } = useDisclosure();  // Manage the drawer state
+  const isMobileOrTablet = useBreakpointValue({ base: true, md: true, lg: false });  // Show drawer for base and md sizes
   const dispatch = useDispatch();
-  const isOpen = useSelector(state => state.drawerOpen.isDrawerOpen);
+  const drawerOpen = useSelector(state => state.drawerOpen.isDrawerOpen);  // Redux state for drawer
 
   const [isLoader, setIsLoader] = useState(true);  // Start with true to simulate initial loading
 
@@ -26,14 +26,15 @@ const BaseLayout = ({ children }) => {
   }, []);
 
   return (
-    <Flex w={"100vw"} height={"100vh"} bg={'gray.900'} justifyContent={'center'}>
-      {isMobile ? (
+    <Flex w={"100vw"} height={"100vh"} bg={'gray.900'}>
+      {/* Sidebar for larger screens or Drawer for mobile/tablet */}
+      {isMobileOrTablet ? (
         <>
-          <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          {/* Drawer */}
+          <Drawer isOpen={drawerOpen} placement="left" onClose={onClose}>
             <DrawerOverlay />
             <DrawerContent>
-              {/* Apply teal color to the close button */}
-              <DrawerCloseButton color="teal.500" position={'fixed'} top={'3%'} right={'18%'} onClick={() => { dispatch(closeDrawer()) }} />
+              <DrawerCloseButton color="teal.500" position="fixed" top="3%" right="18%" onClick={() => { dispatch(closeDrawer()) }} />
               <DrawerBody p={0} w={'100%'}>
                 <Sidebar />
               </DrawerBody>
@@ -41,9 +42,11 @@ const BaseLayout = ({ children }) => {
           </Drawer>
         </>
       ) : (
-        <Sidebar />
+        <Sidebar />  
       )}
-      <Flex flexDirection={'column'} py={{ base: 2, md: 4 }} w={isMobile ? '90%' : '79%'}>
+
+      {/* Main content area */}
+      <Flex flexDirection={'column'} py={{ base: 2, md: 2, lg:4 }} w={isMobileOrTablet ? '100%' : '79%'} >
         {isLoader ? <MusicLoader /> : children}
       </Flex>
     </Flex>

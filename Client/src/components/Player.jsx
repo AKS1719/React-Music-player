@@ -47,7 +47,7 @@ const Player = ({ playlist }) => {
 	const [duration, setDuration] = useState(0);
 	const dispatch = useDispatch();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const isMobile = useBreakpointValue({ base: true, md: false });
+	const isMobile = useBreakpointValue({ base: true,md:true, lg: false });
 
 	const toast  = useToast()
 
@@ -88,6 +88,7 @@ const Player = ({ playlist }) => {
 	const togglePlayPause = (e) => {
 		if (song === null) {
 			alert("Select a song to play");
+			e.stopPropagation()
 			return;
 		}
 		if (isPlaying) {
@@ -150,13 +151,14 @@ const Player = ({ playlist }) => {
 		}
 		try {
 			const data1 = {
-				songId : song?._id
+				songId : song._id
 			}
+			console.log(data1)
 			const respo = await fetch(`${conf.backendUrl}/users/addToFav`,
 				{
 					method : "POST",
 					headers:{
-						"Content-Type":"applicaton/json"
+						"Content-Type":"application/json"
 					},
 					credentials:'include',
 					body:JSON.stringify(data1)
@@ -179,6 +181,13 @@ const Player = ({ playlist }) => {
 
 		} catch (error) {
 			console.log(error)
+			toast({
+				title : "OOPS Something went wrong ❌",
+				description:`there was some problem with network`,
+				status:"success",
+				duration:5000,
+				isClosable:true
+			})
 		}
 
 	}

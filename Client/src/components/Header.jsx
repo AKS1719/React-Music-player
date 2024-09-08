@@ -119,7 +119,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 				aria-label="Open menu"
 				m={4}
 				colorScheme="teal"
-				display={{ base: "block", md: "none" }}
+				display={{ base: "block",md:"block", lg: "none" }}
 			/>
 			{isSearchPage && (
 				<Box width={{ md: "40%" }}>
@@ -194,13 +194,15 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 						// as={IconButton}
 						size="sm"
 						// variant="outline"
-						colorScheme="teal"
+						// colorScheme="teal"
 						aria-label="User menu"
 					>
 						<Avatar
+						ml={'2'}
 							name={userData?.name}
 							src={userData?.avatar}
-							size='lg'
+							w={'40px'}
+							h={'40px'}
 						/>
 					</MenuButton>
 					<MenuList

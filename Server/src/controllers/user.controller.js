@@ -303,6 +303,12 @@ const getArtistList = asyncHandler(async (req, res) => {
 
 const addToFavorites = asyncHandler(async (req,res)=>{
     const {songId}  = req.body;
+    console.log(req.body)
+    console.log(songId)
+
+    if(!songId){
+        throw new ApiError(404, "Song not provided")
+    }
 
     const user = await User.findById(req.user._id).select('-password -refreshToken');
     if(!user){
