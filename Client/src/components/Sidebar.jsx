@@ -31,7 +31,6 @@ const Sidebar = () => {
 	const ShowSignup = useSelector(
 		(state) => state.signupPage.isSignInComponent
 	);
-
 	const toast = useToast();
 
 	const handleLogin = async () => {
@@ -79,7 +78,7 @@ const Sidebar = () => {
 		<Box
 			overflowY={"auto"}
 			bg={"gray.900"}
-			w={{base:'100%', md:'20%'}}
+			w={{base:'100%',md:"100%" , lg:'20%'}}
 			height={"max-content"}
 			display={"flex"}
 			alignItems={"center"}
@@ -132,6 +131,7 @@ const Sidebar = () => {
 					</Box>
 				</>
 			)}
+			
 			{!authStatus ? (
 				<Box
 					as="section"

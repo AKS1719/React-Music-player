@@ -56,9 +56,12 @@ const BaseLayout = ({ children }) => {
 				{/* Sidebar for larger screens or Drawer for mobile/tablet */}
 				{isMobileOrTablet ? (
 					<Drawer
-						isOpen={drawerOpen}
+						isOpen={drawerOpen || isOpen}
 						placement="left"
-						onClose={onClose}
+						onClose={() => {
+							dispatch(closeDrawer());
+						}}
+
 					>
 						<DrawerOverlay />
 						<DrawerContent bg={"gray.900"}>

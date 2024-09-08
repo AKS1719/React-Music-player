@@ -38,6 +38,8 @@ import { setVolume } from "../store/playerSlice.js";
 import { FaVolumeMute } from "react-icons/fa";
 import conf from "../conf/conf.js";
 import { login } from "../store/authSlice.js";
+import { markAddToPlaylistWithSong } from "../store/addToPlaylistSlice.js";
+import AddToPlaylistForm from "./AddToPlaylistForm.jsx";
 
 const Player = ({ playlist }) => {
 	const song = useSelector((state) => state.player.song);
@@ -55,30 +57,13 @@ const Player = ({ playlist }) => {
 	const isPlaylistAvailable =
 		useSelector((state) => state.auth.userData?.playlist) || [];
 	const toast = useToast();
+	const authStatus = useSelector((state) => state.auth.status);
 
-	useEffect(() => {
-		if (song) {
-			setIsPlaying(true);
-			startAnimations();
-		} else {
-			setIsPlaying(false);
-			stopAnimations();
-		}
-	}, [song]);
+	const ShowAddToPlaylist = useSelector(
+		(state) => state.addToPlaylist?.isAddToPlaylist
+	);
 
-	useEffect(() => {
-		if (Array.isArray(favorites) && favorites.length > 0 && song) {
-			const exists = favorites.some((favSong) => favSong === song._id);
-			setAddedToFave(exists);
-		}
-	}, [favorites, song]);
-
-	useEffect(() => {
-		if (audioRef.current) {
-			audioRef.current.volume = volume;
-			dispatch(setVolume({ volume }));
-		}
-	}, [volume, dispatch]);
+	const handleRecentlyPlayed = () => {};
 
 	const formatTime = (t) => {
 		let mm = Math.floor(t / 60)
@@ -228,7 +213,18 @@ const Player = ({ playlist }) => {
 		}
 	};
 
-	const handleAddToPlaylist = () => {};
+	const handleAddToPlaylist = () => {
+		if (!authStatus) {
+			alert("Login to add a song");
+			return;
+		}
+		if (!song) {
+			alert("select a song to add to playlist");
+			return;
+		}
+
+		dispatch(markAddToPlaylistWithSong(song));
+	};
 
 	const toggleMute = () => {
 		if (audioRef.current) {
@@ -242,6 +238,31 @@ const Player = ({ playlist }) => {
 		}
 	};
 
+	useEffect(() => {
+		if (song) {
+			setIsPlaying(true);
+			handleRecentlyPlayed();
+			startAnimations();
+		} else {
+			setIsPlaying(false);
+			stopAnimations();
+		}
+	}, [song]);
+
+	useEffect(() => {
+		if (Array.isArray(favorites) && favorites.length > 0 && song) {
+			const exists = favorites.some((favSong) => favSong === song._id);
+			setAddedToFave(exists);
+		}
+	}, [favorites, song]);
+
+	useEffect(() => {
+		if (audioRef.current) {
+			audioRef.current.volume = volume;
+			dispatch(setVolume({ volume }));
+		}
+	}, [volume, dispatch]);
+
 	return (
 		<>
 			<audio
@@ -252,7 +273,42 @@ const Player = ({ playlist }) => {
 				autoPlay
 				hidden
 				loop
+				onPlay={() => setIsPlaying(true)}
+				onAbort={() => {
+					setIsPlaying(false);
+				}}
+				onPause={() => {
+					setIsPlaying(false);
+				}}
+				onEnded={() => {
+					setIsPlaying(false);
+				}}
 			/>
+
+			{ShowAddToPlaylist && (
+				<>
+					<Box
+						position="fixed"
+						top="0"
+						left="0"
+						width="100vw"
+						height="100vh"
+						bg="rgba(0, 0, 0, 0.5)"
+						backdropFilter="blur(10px)"
+						zIndex={98}
+					/>
+					<Box
+						position="fixed"
+						zIndex={99}
+						top={"50%"}
+						left={"50%"}
+						transform={"translate(-50%,-50%)"}
+					>
+						<AddToPlaylistForm />
+					</Box>
+				</>
+			)}
+
 			{!isMobile ? (
 				<>
 					<Box
@@ -687,9 +743,19 @@ const Player = ({ playlist }) => {
 									>
 										<IconButton
 											aria-label="Like"
-											icon={<FiHeart />}
+											icon={
+												addedToFave ? (
+													<AiFillHeart />
+												) : (
+													<FiHeart />
+												)
+											}
 											variant="ghost"
-											color="white"
+											color={
+												addedToFave
+													? "red.300"
+													: "white"
+											}
 											size="lg"
 											_hover={{
 												bg: "transparent",

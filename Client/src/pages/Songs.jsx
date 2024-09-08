@@ -12,6 +12,7 @@ import {
 	IconButton,
 	useBreakpoint,
 	useToast,
+	useBreakpointValue,
 } from "@chakra-ui/react";
 import conf from "../conf/conf";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +29,7 @@ const Songs = () => {
 	const searchedSongs = useSelector((state) => state.search.searchData);
 	const dispatch = useDispatch();
 	const favorites = useSelector((state) => state.auth.favorites) || [];
-	const isMobile = useBreakpoint({ base: true, md: true, lg: false });
+	const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
 	const toast = useToast();
 
 	useEffect(() => {
@@ -271,9 +272,9 @@ const Songs = () => {
 											>
 												{isMobile
 													? trimTolength(
-															song.songName
+															song.songName 
 													  )
-													: song.songName}
+													: song.songName }
 											</Text>
 											<Text
 												fontSize={{
@@ -297,7 +298,7 @@ const Songs = () => {
 												noOfLines={1}
 												isTruncated
 											>
-												{song.album || "Unknown Album"}
+												{isMobile ? trimTolength(song.album || "Unknown Album") : song.album || "Unknown Album"}
 											</Text>
 										</VStack>
 									</HStack>
