@@ -8,7 +8,6 @@ const Playlist = () => {
 	return (
 		<>
 			<Header />
-			<Player />
 		</>
 	);
 };

@@ -7,7 +7,7 @@ import {accessTokenOptions, refreshTokenOptions} from "../constants.js"
 import { Playlist } from "../models/playlists.models.js";
 import { RecentlyPlayed } from "../models/recentlyPlayed.models.js"
 import {Song} from "../models/songs.models.js"
-const generateAccessAndRefereshTokens = async (userId) => {
+const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
@@ -55,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(500, "Error occured while Registering user user");
     }
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     const finalUser = await User.findById(user._id)
         .select("-password -refreshToken")
 
@@ -84,7 +84,7 @@ const loginUser = asyncHandler(async (req, res) => {
     let finalUser = await User.findById(user._id)
         .select("-password -refreshToken")
     
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     return res
         .status(201)
         .cookie("accessToken", accessToken, accessTokenOptions)
@@ -128,7 +128,7 @@ const registerWithGoogle = asyncHandler(async(req,res)=>{
     if (!user) {
         throw new ApiError(500, "Error occured while Registering user user");
     }
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     const finalUser = await User.findById(user._id)
         .select("-password -refreshToken")
 
@@ -155,7 +155,7 @@ const loginWithGoogle = asyncHandler(async(req,res)=>{
     let finalUser = await User.findById(user._id)
         .select("-password -refreshToken")
     
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     return res
         .status(201)
         .cookie("accessToken", accessToken, accessTokenOptions)
@@ -314,6 +314,13 @@ const addToFavorites = asyncHandler(async (req,res)=>{
     if(!user){
         throw new ApiError(404, "User not found");
     }
+    await Song.findByIdAndUpdate(songId,
+        {
+            $inc:{
+                likes:1
+            }
+        }
+    )
     user.favorites.push(songId)
     user.save({validateBeforeSave:false})
 
@@ -321,6 +328,41 @@ const addToFavorites = asyncHandler(async (req,res)=>{
         new ApiResponse(200, user, "Successfully added to favorites")
     )
 })
+
+const deleteFromFavorites = asyncHandler(async (req, res) => {
+    const { songId } = req.body;
+
+    // Check if the songId is provided
+    if (!songId) {
+        throw new ApiError(400, "Song ID not provided");
+    }
+
+    // Find the user
+    const user = await User.findById(req.user._id).select('-password -refreshToken');
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Check if the song is in the user's favorites
+    if (!user.favorites.includes(songId)) {
+        throw new ApiError(404, "Song not found in favorites");
+    }
+
+    // Remove the songId from the user's favorites
+    user.favorites = user.favorites.filter(id => id.toString() !== songId);
+    await user.save(); // Save with validation
+
+    // Optionally, decrement the song's likes count
+    await Song.findByIdAndUpdate(songId, {
+        $inc: { likes: -1 }
+    });
+
+    return res.status(200).json(
+        new ApiResponse(200, user, "Successfully removed from favorites")
+    );
+});
+
+
 
 export default {
     registerUser,
@@ -334,4 +376,5 @@ export default {
     updateAvatar,
     getArtistList,
     addToFavorites,
+    deleteFromFavorites
 }

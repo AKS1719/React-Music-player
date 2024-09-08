@@ -16,10 +16,10 @@ import { CloseIcon } from "@chakra-ui/icons";
 
 import { FcGoogle } from "react-icons/fc";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../Service/Firebase/firbase.js";
+import { auth } from "../Service/Firebase/firebase.js";
 
 import { useDispatch } from "react-redux";
-import { markLogin} from "../store/loginSlice.js";
+import { markLogin } from "../store/loginSlice.js";
 import { markNotsigninIn } from "../store/signupSlice.js";
 import conf from "../conf/conf.js";
 import { login } from "../store/authSlice.js";
@@ -31,8 +31,8 @@ const Signup = () => {
 		handleSubmit: handleSubmitRegular,
 		formState: { errors: errorsRegular },
 	} = useForm();
-	
-	const [error, seterror] = useState('')
+
+	const [error, seterror] = useState("");
 
 	// Form hooks for Google sign-in form
 	const {
@@ -40,9 +40,9 @@ const Signup = () => {
 		handleSubmit: handleSubmitGoogle,
 		formState: { errors: errorsGoogle },
 	} = useForm();
-	const [googleRecivedData, setGoogleRecivedData] = useState(null);
+	const [googleReceivedData, setGoogleReceivedData] = useState(null);
 	const onSubmit = async (data) => {
-		seterror("")
+		seterror("");
 		try {
 			const res = await fetch(`${conf.backendUrl}/users/register`, {
 				method: "POST",
@@ -64,45 +64,46 @@ const Signup = () => {
 				dispatch(markNotsigninIn());
 			}
 		} catch (error) {
-			seterror(error.message)
+			seterror(error.message);
 			console.error("Error during sign-up:", error);
 		}
 	};
 
 	const onSubmit2 = async (data) => {
-		seterror("")
-		const meged = {...googleRecivedData, ...data}
+		seterror("");
+		const meged = { ...googleReceivedData, ...data };
 		try {
-			const res = await fetch(`${conf.backendUrl}/users/registerWithGoogle`,
+			const res = await fetch(
+				`${conf.backendUrl}/users/registerWithGoogle`,
 				{
-					method:"POST",
-					headers:{
-						"Content-Type":"application/json"
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
 					},
-					body:JSON.stringify(meged),
-					credentials:'include'
+					body: JSON.stringify(meged),
+					credentials: "include",
 				}
-			)
-			if(!res.ok){
-				const err = await res.json()
-				throw new Error(err.message)
+			);
+			if (!res.ok) {
+				const err = await res.json();
+				throw new Error(err.message);
 			}
-			const data = await res.json()
-			dispatch(login(data.data))
+			const data = await res.json();
+			dispatch(login(data.data));
 			dispatch(markNotsigninIn());
 		} catch (error) {
-			seterror(error.message)
-			console.log(error)
+			seterror(error.message);
+			console.log(error);
 		}
 	};
 
 	const handleSignInWithGoogle = async () => {
-		seterror("")
+		seterror("");
 		try {
 			const provider = new GoogleAuthProvider();
 			const result = await signInWithPopup(auth, provider);
 
-			setGoogleRecivedData({
+			setGoogleReceivedData({
 				name: result.user.displayName,
 				email: result.user.email,
 				emailVerified: result.user.emailVerified,
@@ -110,15 +111,14 @@ const Signup = () => {
 				phoneNumber: result.user.phoneNumber,
 			});
 		} catch (error) {
-			seterror(error.message)
+			seterror(error.message);
 			console.log(error);
 		}
 	};
 
 	useEffect(() => {
-		console.log(googleRecivedData);
-	}, [googleRecivedData]);
-
+		console.log(googleReceivedData);
+	}, [googleReceivedData]);
 
 	return (
 		<Box
@@ -147,11 +147,8 @@ const Signup = () => {
 				<CloseIcon style={{ color: "white" }} />
 			</Flex>
 
-			{
-				error && 
-				<Text color={'crimson'}>{error?.message || error}</Text>
-			}
-			{!googleRecivedData && (
+			{error && <Text color={"crimson"}>{error?.message || error}</Text>}
+			{!googleReceivedData && (
 				<>
 					<Text
 						mb={1}
@@ -205,8 +202,11 @@ const Signup = () => {
 									type="password"
 									{...registerRegular("password", {
 										required: "Password is required",
-										minLength: { value: 8, message: "Minimum 8 characters required" }
-
+										minLength: {
+											value: 8,
+											message:
+												"Minimum 8 characters required",
+										},
 									})}
 									placeholder="Enter your password"
 								/>
@@ -303,14 +303,14 @@ const Signup = () => {
 				</>
 			)}
 
-			{googleRecivedData && (
+			{googleReceivedData && (
 				<>
 					<Text
 						mb={1}
 						fontSize={{ base: "1.5rem", md: "2.3rem" }}
 						fontWeight={"bold"}
 					>
-						Welcome {googleRecivedData.name || "New User"}!
+						Welcome {googleReceivedData.name || "New User"}!
 					</Text>
 					<Text
 						mb={1}
@@ -321,12 +321,12 @@ const Signup = () => {
 					<form onSubmit={handleSubmitGoogle(onSubmit2)}>
 						<VStack spacing={{ base: "2", md: "2.5" }}>
 							{/* Email Field - Disabled as it's received from Google */}
-							{!googleRecivedData.email && (
+							{!googleReceivedData.email && (
 								<FormControl isInvalid={errorsGoogle.email}>
 									<FormLabel>Email</FormLabel>
 									<Input
 										type="email"
-										value={googleRecivedData.email}
+										value={googleReceivedData.email}
 										{...registerGoogle("email", {
 											required: "Email is required",
 											validate: {
@@ -362,7 +362,7 @@ const Signup = () => {
 							</FormControl>
 
 							{/* Name Field (only show if not provided by Google) */}
-							{!googleRecivedData.name && (
+							{!googleReceivedData.name && (
 								<FormControl isInvalid={errorsGoogle.name}>
 									<FormLabel>Name</FormLabel>
 									<Input
@@ -380,7 +380,7 @@ const Signup = () => {
 							)}
 
 							{/* Phone Number Field */}
-							{!googleRecivedData.phoneNumber && (
+							{!googleReceivedData.phoneNumber && (
 								<FormControl
 									isInvalid={errorsGoogle.phoneNumber}
 								>
@@ -401,7 +401,7 @@ const Signup = () => {
 										placeholder="Enter your Phone Number"
 										// Correct the default value application for phoneNumber
 										defaultValue={
-											googleRecivedData?.phoneNumber || ""
+											googleReceivedData?.phoneNumber || ""
 										}
 									/>
 									<FormErrorMessage>
@@ -417,8 +417,11 @@ const Signup = () => {
 									type="password"
 									{...registerGoogle("password", {
 										required: "Password is required",
-										minLength: { value: 8, message: "Minimum 8 characters required" }
-
+										minLength: {
+											value: 8,
+											message:
+												"Minimum 8 characters required",
+										},
 									})}
 									placeholder="Set your password"
 								/>

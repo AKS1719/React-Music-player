@@ -9,86 +9,84 @@ import {
 	Input,
 	VStack,
 	Text,
-	Flex
+	Flex,
 } from "@chakra-ui/react";
 
-import {CloseIcon} from "@chakra-ui/icons"
+import { CloseIcon } from "@chakra-ui/icons";
 
 import { FcGoogle } from "react-icons/fc";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../Service/Firebase/firbase.js";
-
+import { auth } from "../Service/Firebase/firebase.js";
 
 import { useDispatch } from "react-redux";
-import { markNotLogin} from "../store/loginSlice.js"
-import { marksigningIn} from "../store/signupSlice.js"
+import { markNotLogin } from "../store/loginSlice.js";
+import { marksigningIn } from "../store/signupSlice.js";
 import conf from "../conf/conf.js";
-import {login} from "../store/authSlice.js"
+import { login } from "../store/authSlice.js";
 
 const Login = () => {
-	const dispatch = useDispatch()
+	const dispatch = useDispatch();
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm();
-	const [error, seterror] = useState('')
+	const [error, seterror] = useState("");
 	const onSubmit = async (data) => {
-		seterror("")
-		console.log(data)
+		seterror("");
+		console.log(data);
 		try {
-		    const res = await fetch(`${conf.backendUrl}/users/login`,
-				{
-					method:"POST",
-					headers:{
-						"Content-Type" : "application/json"
-					},
-					body:JSON.stringify(data),
-					credentials:'include'
-				}
-			)
-			if(!res.ok){
+			const res = await fetch(`${conf.backendUrl}/users/login`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+				credentials: "include",
+			});
+			if (!res.ok) {
 				const err = await res.json();
-				throw new Error(err.message)
+				throw new Error(err.message);
 			}
 			const respo = await res.json();
-			if(respo && respo.data){
-				dispatch(login(respo.data))
-				console.log('logged in succesully')
-				dispatch(markNotLogin())
+			if (respo && respo.data) {
+				dispatch(login(respo.data));
+				console.log("logged in successfully");
+				dispatch(markNotLogin());
 			}
 		} catch (error) {
-			seterror(error)
-		    console.error("Error during sign-up:", error);
+			seterror(error);
+			console.error("Error during sign-up:", error);
 		}
 	};
 
 	const handleSignInWithGoogle = async () => {
-		seterror("")
+		seterror("");
 		try {
 			const provider = new GoogleAuthProvider();
 			const result = await signInWithPopup(auth, provider);
-			const data1 = {email:result.user.email}
-			const response = await fetch(`${conf.backendUrl}/users/loginWithGoogle`,
-                {
-                    method :"POST",
-                    headers:{
-                        "Content-Type":"application/json",
-                    },
-                    body:JSON.stringify(data1),
-					credentials:'include'
-                }
-            )
-            if(!response.ok){
-                const err = await response.json();
-                throw new Error(err.message)
-            }
-            const data = await response.json();
+			const data1 = { email: result.user.email };
+			const response = await fetch(
+				`${conf.backendUrl}/users/loginWithGoogle`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data1),
+					credentials: "include",
+				}
+			);
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.message);
+			}
+			const data = await response.json();
 
-            dispatch(login(data.data));
-            dispatch(markNotLogin())
+			dispatch(login(data.data));
+			dispatch(markNotLogin());
 		} catch (error) {
-			seterror(error)
+			seterror(error);
 			console.log(error);
 		}
 	};
@@ -107,33 +105,44 @@ const Login = () => {
 				color: "white",
 			}}
 		>
-			<Flex position='fixed' top='5%' right='10%' cursor='pointer' onClick={()=>{
-				dispatch(markNotLogin())
-			}}>
-				<CloseIcon style={{color:'white'}}/>
+			<Flex
+				position="fixed"
+				top="5%"
+				right="10%"
+				cursor="pointer"
+				onClick={() => {
+					dispatch(markNotLogin());
+				}}
+			>
+				<CloseIcon style={{ color: "white" }} />
 			</Flex>
-			{
-				error && 
-				<Text color={'crimson'}>{error.message} &nbsp; {error.message==="User not found"? "Try Registering" : ""} </Text>
-			}
+			{error && (
+				<Text color={"crimson"}>
+					{error.message} &nbsp;{" "}
+					{error.message === "User not found"
+						? "Try Registering"
+						: ""}{" "}
+				</Text>
+			)}
 			<Text
 				mb={3}
-				fontSize={{base:"1.5rem",md:"2.3rem"}}
+				fontSize={{ base: "1.5rem", md: "2.3rem" }}
 				fontWeight={"bold"}
 			>
-				Hello Again,<br/> Pal
+				Hello Again,
+				<br /> Pal
 			</Text>
 			<Text
 				mb={3}
-				fontSize={{base:"0.87rem", md:"1.2rem"}}
+				fontSize={{ base: "0.87rem", md: "1.2rem" }}
 			>
-				Logging in first time ? 
+				Logging in first time ?
 				<Button
 					p={2}
 					ml={1}
-					onClick={()=>{
-						dispatch(markNotLogin())
-						dispatch(marksigningIn())
+					onClick={() => {
+						dispatch(markNotLogin());
+						dispatch(marksigningIn());
 					}}
 				>
 					Register here

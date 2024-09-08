@@ -9,7 +9,6 @@ const Search = () => {
         <Flex h={'74%'} w={'100%'}>
 
         </Flex>
-        <Player/>
     </>
   )
 }

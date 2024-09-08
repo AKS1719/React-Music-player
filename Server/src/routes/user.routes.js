@@ -39,5 +39,6 @@ router.route('/getArtistList').get(userController.getArtistList)
 router.route('/registerWithGoogle').post(userController.registerWithGoogle)
 router.route('/loginWithGoogle').post(userController.loginWithGoogle)
 router.route('/addToFav').post(verifyJWT,userController.addToFavorites)
+router.route('/delFromFav').post(verifyJWT,userController.deleteFromFavorites)
 
 export default router;

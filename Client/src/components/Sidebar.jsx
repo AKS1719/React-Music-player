@@ -28,7 +28,7 @@ const Sidebar = () => {
 	const authStatus = useSelector((state) => state.auth.status);
 	const dispatch = useDispatch();
 	const ShowLogin = useSelector((state) => state.loginPage.isLoginComponent);
-	const ShowSingup = useSelector(
+	const ShowSignup = useSelector(
 		(state) => state.signupPage.isSignInComponent
 	);
 
@@ -39,7 +39,7 @@ const Sidebar = () => {
 		dispatch(markLogin());
 	};
 
-	const handleSingup = async () => {
+	const handleSignup = async () => {
 		dispatch(markNotLogin());
 		dispatch(marksigningIn());
 	};
@@ -109,7 +109,7 @@ const Sidebar = () => {
 					</Box>
 				</>
 			)}
-			{ShowSingup && (
+			{ShowSignup && (
 				<>
 					<Box
 						position="fixed"
@@ -166,7 +166,7 @@ const Sidebar = () => {
 							Login
 						</Button>
 						<Button
-							onClick={handleSingup}
+							onClick={handleSignup}
 							w="full"
 							bgGradient="linear(to-r, orange.400, pink.500)"
 							color="white"

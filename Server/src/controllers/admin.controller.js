@@ -49,7 +49,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
         .status(201)
         .cookie("accessToken", accessToken, accessTokenOptions)
         .cookie("refreshToken", refreshToken, refreshTokenOptions)
-        .json(new ApiResponse(201, finalAdmin, "Admin creation successfull"));
+        .json(new ApiResponse(201, finalAdmin, "Admin creation successful"));
 });
 
 const loginAdmin = asyncHandler(async (req, res) => {

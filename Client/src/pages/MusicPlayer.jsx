@@ -15,7 +15,6 @@ const MusicPlayer = () => {
 			<Header />
 			<ArtistsComponent />
 			<NewlyAddedSongs />
-			<Player />
 		</>
 	);
 };

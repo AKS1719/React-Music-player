@@ -11,7 +11,7 @@ import {
 	SkeletonCircle,
 } from "@chakra-ui/react";
 import conf from "../conf/conf.js";
-import { trimTolength } from "../conf/utlis.js";
+import { trimTolength } from "../conf/utils.js";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -186,7 +186,9 @@ const NewlyAddedSongs = () => {
 							transition={"transform 0.2s"}
 							onClick={() => {
 								if (!authStatus) {
-									alert("Please login to listen to the songs");
+									alert(
+										"Please login to listen to the songs"
+									);
 								} else {
 									dispatch(playSong(song));
 								}

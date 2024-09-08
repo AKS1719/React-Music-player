@@ -1,4 +1,3 @@
-// PageTransition.js
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
@@ -9,7 +8,7 @@ const variants = {
     out: { opacity: 0, y: "100%" },
 };
 
-const PageTransition = ({ children }) => {
+const PageTransition = ({ children, aksW }) => {
     const location = useLocation();
 
     return (
@@ -22,10 +21,9 @@ const PageTransition = ({ children }) => {
                 variants={variants}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
                 style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    overflow: "hidden", // Prevent scrollbars
+                    width: aksW,  // Ensure this correctly applies the width
+                    height: "100%",  // Maintain 100% height to avoid overflow issues
+                    overflow: "hidden",  // Prevent scrollbars during animation
                 }}
             >
                 {children}

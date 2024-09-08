@@ -12,7 +12,6 @@ import Songs from "./pages/Songs.jsx";
 import BaseLayout from "./components/Layout/BaseLayout.jsx";
 import Profile from "./pages/Profile.jsx";
 
-
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -29,45 +28,27 @@ const router = createBrowserRouter([
 				),
 			},
 			{
-				path: "music-player",
-				element: (
-					<PageTransition>
-						<BaseLayout>
-						<MusicPlayer />
-						</BaseLayout>
-					</PageTransition>
-				),
+				path: "/",
+				element: <BaseLayout />,
+				children: [
+					{
+						path: "music-player",
+						element: <MusicPlayer />,
+					},
+					{
+						path: "songs",
+						element: <Songs />,
+					},
+					{
+						path: "search",
+						element: <Search />,
+					},
+					{
+						path: "profile/:username",
+						element: <Profile />,
+					},
+				],
 			},
-			{
-				path: "songs",
-				element: (
-					<PageTransition>
-						<BaseLayout>
-						<Songs />
-						</BaseLayout>
-					</PageTransition>
-				),
-			},
-			{
-				path:"search",
-				element:(
-					<PageTransition>
-						<BaseLayout>
-						<Search />
-						</BaseLayout>
-					</PageTransition>
-				)
-			},
-			{
-				path:"profile/:username",
-				element:(
-					<PageTransition>
-						<BaseLayout>
-						<Profile />
-						</BaseLayout>
-					</PageTransition>
-				)
-			}
 		],
 	},
 	{
@@ -78,10 +59,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
 	<StrictMode>
-			<ChakraProvider>
-				<Provider store={store}>
-					<RouterProvider router={router} />
-				</Provider>
-			</ChakraProvider>
+		<ChakraProvider>
+			<Provider store={store}>
+				<RouterProvider router={router} />
+			</Provider>
+		</ChakraProvider>
 	</StrictMode>
 );

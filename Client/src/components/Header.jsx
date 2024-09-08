@@ -28,9 +28,6 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 	const userData = useSelector((state) => state.auth.userData);
 	const dispatch = useDispatch();
     const navigate = useNavigate();
-	useEffect(() => {
-		console.log("rerender ");
-	}, []);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -94,6 +91,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 		}
 	};
 
+
 	return (
 		<Box
 			as="header"
@@ -140,6 +138,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 								borderRadius="20px"
 								p={5}
 								border={"0px"}
+								onFocus={()=>{console.log('clicked')}}
 								_hover={{
 									border: "0px",
 									borderColor: "white",
@@ -201,8 +200,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 						ml={'2'}
 							name={userData?.name}
 							src={userData?.avatar}
-							w={'40px'}
-							h={'40px'}
+							size={{base:'sm', md:'md'}}
 						/>
 					</MenuButton>
 					<MenuList

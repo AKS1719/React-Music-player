@@ -29,13 +29,15 @@ import {
 	FiPlus,
 	FiVolume2,
 } from "react-icons/fi";
+
+import { AiFillHeart } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { gsap } from "gsap";
-import { trimTolength } from "../conf/utlis";
+import { trimTolength } from "../conf/utils.js";
 import { setVolume } from "../store/playerSlice.js";
 import { FaVolumeMute } from "react-icons/fa";
-import conf from "../conf/conf.js"
-import {login} from "../store/authSlice.js"
+import conf from "../conf/conf.js";
+import { login } from "../store/authSlice.js";
 
 const Player = ({ playlist }) => {
 	const song = useSelector((state) => state.player.song);
@@ -43,52 +45,55 @@ const Player = ({ playlist }) => {
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [volume, setVolumeState] = useState(0.5);
 	const [currentTime, setCurrentTime] = useState(0);
-	const [isMute, setIsMute] = useState(false)
+	const [isMute, setIsMute] = useState(false);
 	const [duration, setDuration] = useState(0);
 	const dispatch = useDispatch();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const isMobile = useBreakpointValue({ base: true,md:true, lg: false });
-
-	const toast  = useToast()
-
+	const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
+	const [addedToFave, setAddedToFave] = useState(false);
+	const favorites = useSelector((state) => state.auth.userData?.favorites);
+	const isPlaylistAvailable =
+		useSelector((state) => state.auth.userData?.playlist) || [];
+	const toast = useToast();
 
 	useEffect(() => {
-		if (song !== null) {
+		if (song) {
 			setIsPlaying(true);
-			startAnimations(); // Start animations when a song is loaded
+			startAnimations();
 		} else {
 			setIsPlaying(false);
-			stopAnimations(); // Stop animations when no song is loaded
+			stopAnimations();
 		}
 	}, [song]);
 
-	const formatTime = (t) => {
-		let mm = "00";
-		let ss = "00";
-		if (t > 60) {
-			mm = Math.floor(t / 60);
-			if (mm < 10) {
-				mm = "0" + String(mm);
-			}
+	useEffect(() => {
+		if (Array.isArray(favorites) && favorites.length > 0 && song) {
+			const exists = favorites.some((favSong) => favSong === song._id);
+			setAddedToFave(exists);
 		}
-		ss = Math.floor(t % 60);
-		if (ss < 10) {
-			ss = "0" + String(ss);
-		}
-		return mm + ":" + ss;
-	};
+	}, [favorites, song]);
 
 	useEffect(() => {
 		if (audioRef.current) {
 			audioRef.current.volume = volume;
 			dispatch(setVolume({ volume }));
 		}
-	}, [volume]);
+	}, [volume, dispatch]);
+
+	const formatTime = (t) => {
+		let mm = Math.floor(t / 60)
+			.toString()
+			.padStart(2, "0");
+		let ss = Math.floor(t % 60)
+			.toString()
+			.padStart(2, "0");
+		return `${mm}:${ss}`;
+	};
 
 	const togglePlayPause = (e) => {
-		if (song === null) {
+		if (!song) {
 			alert("Select a song to play");
-			e.stopPropagation()
+			e.stopPropagation();
 			return;
 		}
 		if (isPlaying) {
@@ -98,8 +103,8 @@ const Player = ({ playlist }) => {
 			audioRef.current.play();
 			startAnimations();
 		}
-		e.stopPropagation()
 		setIsPlaying(!isPlaying);
+		e.stopPropagation();
 	};
 
 	const handleTimeUpdate = () => {
@@ -120,16 +125,14 @@ const Player = ({ playlist }) => {
 	};
 
 	const getImageUrl = (song) => {
-		if (song?.songThumbnailUrl) {
-			return song?.songThumbnailUrl;
-		}
-		const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
-			song?.songName || "Unknown"
-		)}`;
-		return placeholderImage;
+		return (
+			song?.songThumbnailUrl ||
+			`https://via.placeholder.com/100.png?text=${encodeURIComponent(
+				song?.songName || "Unknown"
+			)}`
+		);
 	};
 
-	// GSAP animation methods
 	const startAnimations = () => {
 		gsap.to(".album-cover", {
 			rotation: 360,
@@ -143,78 +146,117 @@ const Player = ({ playlist }) => {
 		gsap.to(".album-cover", { rotation: 0, duration: 1 });
 	};
 
-	const handleLike  = async()=>{
-		if(song===null)
-		{
-			alert('Select one song to like !! ')
+	const handleLike = async () => {
+		if (!song) {
+			alert("Select one song to like !! ");
 			return;
 		}
-		try {
-			const data1 = {
-				songId : song._id
-			}
-			console.log(data1)
-			const respo = await fetch(`${conf.backendUrl}/users/addToFav`,
-				{
-					method : "POST",
-					headers:{
-						"Content-Type":"application/json"
-					},
-					credentials:'include',
-					body:JSON.stringify(data1)
+		if (!addedToFave) {
+			try {
+				const response = await fetch(
+					`${conf.backendUrl}/users/addToFav`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+						body: JSON.stringify({ songId: song._id }),
+					}
+				);
+
+				if (!response.ok) {
+					const err = await response.json();
+					throw new Error(err.message);
 				}
-			)
-	
-			if(!respo.ok){
-				const err = await respo.json()
-				throw new Error(err.message)
+
+				const { data } = await response.json();
+				dispatch(login(data));
+				toast({
+					title: "Success ✅",
+					description: "Added to favorites",
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+				});
+				setAddedToFave(true);
+			} catch (error) {
+				console.error(error);
+				toast({
+					title: "OOPS Something went wrong ❌",
+					description: "There was some problem with network",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+				});
 			}
-			const {data} = await respo.json()
-			dispatch(login(data))
-			toast({
-				title : "Success ✅",
-				description:"Added to favorites",
-				status:"success",
-				duration:5000,
-				isClosable:true
-			})
+		} else {
+			try {
+				const response = await fetch(
+					`${conf.backendUrl}/users/delFromFav`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+						body: JSON.stringify({ songId: song._id }),
+					}
+				);
 
-		} catch (error) {
-			console.log(error)
-			toast({
-				title : "OOPS Something went wrong ❌",
-				description:`there was some problem with network`,
-				status:"success",
-				duration:5000,
-				isClosable:true
-			})
+				if (!response.ok) {
+					const err = await response.json();
+					throw new Error(err.message);
+				}
+
+				const { data } = await response.json();
+				dispatch(login(data));
+				toast({
+					title: "Success ✅",
+					description: "Removed from favorites",
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+				});
+				setAddedToFave(false);
+			} catch (error) {
+				console.error(error);
+				toast({
+					title: "OOPS Something went wrong ❌",
+					description: "There was some problem with network",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+				});
+			}
 		}
+	};
 
-	}
-	const handleAddToPlaylist = ()=>{
-		
-	}
+	const handleAddToPlaylist = () => {};
 
 	const toggleMute = () => {
 		if (audioRef.current) {
 			if (isMute) {
-				audioRef.current.volume = volume;  // Restore previous volume
+				audioRef.current.volume = volume;
 				setIsMute(false);
 			} else {
-				audioRef.current.volume = 0;  // Mute the audio
+				audioRef.current.volume = 0;
 				setIsMute(true);
 			}
 		}
 	};
-	
-
 
 	return (
 		<>
+			<audio
+				ref={audioRef}
+				src={song?.songUrl}
+				onTimeUpdate={handleTimeUpdate}
+				onLoadedMetadata={handleLoadedMetadata}
+				autoPlay
+				hidden
+				loop
+			/>
 			{!isMobile ? (
 				<>
 					<Box
-						h={"15%"}
+						h={"100%"}
 						w={"full"}
 						bg={"gray.800"}
 						p={2}
@@ -224,15 +266,6 @@ const Player = ({ playlist }) => {
 						borderColor={"gray.700"}
 						color={"white"}
 					>
-						<audio
-							ref={audioRef}
-							src={song?.songUrl}
-							onTimeUpdate={handleTimeUpdate}
-							onLoadedMetadata={handleLoadedMetadata}
-							autoPlay
-							hidden
-						/>
-
 						<Flex
 							mt={2}
 							justifyContent={"space-between"}
@@ -281,12 +314,11 @@ const Player = ({ playlist }) => {
 									variant="ghost"
 									color="white"
 									size="lg"
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 								<IconButton
@@ -295,12 +327,11 @@ const Player = ({ playlist }) => {
 									variant="ghost"
 									color="white"
 									size="lg"
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 								<IconButton
@@ -318,12 +349,11 @@ const Player = ({ playlist }) => {
 									variant="ghost"
 									color="white"
 									size="lg"
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 								<IconButton
@@ -332,12 +362,11 @@ const Player = ({ playlist }) => {
 									variant="ghost"
 									color="white"
 									size="lg"
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 							</Flex>
@@ -377,17 +406,22 @@ const Player = ({ playlist }) => {
 							>
 								<IconButton
 									aria-label="Like"
-									icon={<FiHeart />}
+									icon={
+										addedToFave ? (
+											<AiFillHeart />
+										) : (
+											<FiHeart />
+										)
+									}
 									variant="ghost"
-									color="white"
+									color={addedToFave ? "red.300" : "white"}
 									size="lg"
 									onClick={handleLike}
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 								<IconButton
@@ -397,24 +431,29 @@ const Player = ({ playlist }) => {
 									color="white"
 									size="lg"
 									onClick={handleAddToPlaylist}
-									
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 								/>
 								<IconButton
 									aria-label="Volume"
-									icon={!isMute ? <FiVolume2 /> : <FaVolumeMute /> }
+									icon={
+										!isMute ? (
+											<FiVolume2 />
+										) : (
+											<FaVolumeMute />
+										)
+									}
 									variant="ghost"
 									color="white"
 									_hover={{
-										bg:"transaprent"
+										bg: "transparent",
 									}}
 									_focus={{
-										bg:"transparent"
+										bg: "transparent",
 									}}
 									size="lg"
 									onClick={toggleMute}
@@ -485,21 +524,20 @@ const Player = ({ playlist }) => {
 						isOpen={isOpen}
 						placement="bottom"
 						onClose={onClose}
-						size="lg"
-                        >
+						size="md"
+					>
 						<DrawerOverlay />
-						<DrawerContent w={'100%'}
-                        
-                        borderRadius="20px"
-                        overflowY={'auto'}
-                        >
-							<DrawerCloseButton
-								color="teal.500"
-							/>
-							<DrawerBody p={0} >
+						<DrawerContent
+							w={"100%"}
+							bg={"rgba(26, 32, 44, 0.5)"}
+							backdropFilter={"blur(10px)"}
+							borderRadius="20px"
+							overflowY={"auto"}
+						>
+							<DrawerCloseButton color="teal.500" />
+							<DrawerBody p={0}>
 								<Box
-									bg={"gray.800"}
-									py={20}
+									py={10}
 									borderWidth={"1px"}
 									borderStyle={"solid"}
 									borderRadius={"10px"}
@@ -513,9 +551,8 @@ const Player = ({ playlist }) => {
 										<Image
 											src={getImageUrl(song)}
 											alt={song?.songName || "Unknown"}
-											boxSize="60%"
+											boxSize={{ base: "40%", md: "20%" }}
 											borderRadius="md"
-											className="album-cover"
 										/>
 										<Text
 											fontWeight="bold"
@@ -548,10 +585,10 @@ const Player = ({ playlist }) => {
 												color="white"
 												size="lg"
 												_hover={{
-													bg:"transaprent",
+													bg: "transparent",
 												}}
 												_focus={{
-													bg:"transparent",
+													bg: "transparent",
 												}}
 											/>
 											<IconButton
@@ -561,10 +598,10 @@ const Player = ({ playlist }) => {
 												color="white"
 												size="lg"
 												_hover={{
-													bg:"transaprent"
+													bg: "transparent",
 												}}
 												_focus={{
-													bg:"transparent"
+													bg: "transparent",
 												}}
 											/>
 											<IconButton
@@ -591,10 +628,10 @@ const Player = ({ playlist }) => {
 												color="white"
 												size="lg"
 												_hover={{
-													bg:"transaprent"
+													bg: "transparent",
 												}}
 												_focus={{
-													bg:"transparent"
+													bg: "transparent",
 												}}
 											/>
 											<IconButton
@@ -604,10 +641,10 @@ const Player = ({ playlist }) => {
 												color="white"
 												size="lg"
 												_hover={{
-													bg:"transaprent"
+													bg: "transparent",
 												}}
 												_focus={{
-													bg:"transparent"
+													bg: "transparent",
 												}}
 											/>
 										</Flex>
@@ -644,7 +681,7 @@ const Player = ({ playlist }) => {
 									<Flex
 										align="center"
 										// ml={4}
-										justify={'center'}
+										justify={"center"}
 										className="volume-control"
 										mt={4}
 									>
@@ -655,10 +692,10 @@ const Player = ({ playlist }) => {
 											color="white"
 											size="lg"
 											_hover={{
-												bg:"transaprent"
+												bg: "transparent",
 											}}
 											_focus={{
-												bg:"transparent"
+												bg: "transparent",
 											}}
 											onClick={handleLike}
 										/>
@@ -669,24 +706,30 @@ const Player = ({ playlist }) => {
 											color="white"
 											size="lg"
 											_hover={{
-												bg:"transaprent"
+												bg: "transparent",
 											}}
 											_focus={{
-												bg:"transparent"
+												bg: "transparent",
 											}}
 											onClick={handleAddToPlaylist}
 										/>
 										<IconButton
 											aria-label="Volume"
-											icon={!isMute ? <FiVolume2 /> : <FaVolumeMute/>}
+											icon={
+												!isMute ? (
+													<FiVolume2 />
+												) : (
+													<FaVolumeMute />
+												)
+											}
 											variant="ghost"
 											color="white"
 											size="lg"
 											_hover={{
-												bg:"transaprent"
+												bg: "transparent",
 											}}
 											_focus={{
-												bg:"transparent"
+												bg: "transparent",
 											}}
 											onClick={toggleMute}
 										/>
@@ -707,15 +750,6 @@ const Player = ({ playlist }) => {
 							</DrawerBody>
 						</DrawerContent>
 					</Drawer>
-
-					<audio
-						ref={audioRef}
-						src={song?.songUrl}
-						onTimeUpdate={handleTimeUpdate}
-						onLoadedMetadata={handleLoadedMetadata}
-						autoPlay
-						hidden
-					/>
 				</>
 			)}
 		</>

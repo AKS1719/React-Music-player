@@ -9,25 +9,37 @@ import {
 	VStack,
 	SkeletonCircle,
 	SkeletonText,
+	IconButton,
 	useBreakpoint,
+	useToast,
 } from "@chakra-ui/react";
 import conf from "../conf/conf";
 import { useDispatch, useSelector } from "react-redux";
 import { playSong } from "../store/playerSlice";
-import { trimTolength } from "../conf/utlis";
+import { trimTolength } from "../conf/utils.js";
+import { AiFillHeart } from "react-icons/ai";
+import { FiHeart } from "react-icons/fi";
+import { login } from "../store/authSlice.js";
 
 const Songs = () => {
 	const [songs, setSongs] = useState([]);
-	const [isLoading, setIsLoading] = useState(true); // Add loading state
+	const [isLoading, setIsLoading] = useState(true);
 	const authStatus = useSelector((state) => state.auth.status);
 	const searchedSongs = useSelector((state) => state.search.searchData);
 	const dispatch = useDispatch();
-
-	const isMobile = useBreakpoint({ base: true, md: false });
+	const favorites = useSelector((state) => state.auth.favorites) || [];
+	const isMobile = useBreakpoint({ base: true, md: true, lg: false });
+	const toast = useToast();
 
 	useEffect(() => {
 		fetchLatestSongs();
 	}, []);
+
+	useEffect(() => {}, [favorites]);
+
+	const checkInFavorites = (songId) => {
+		return Array.isArray(favorites) && favorites.includes(songId);
+	};
 
 	useEffect(() => {
 		if (searchedSongs !== null) {
@@ -46,10 +58,10 @@ const Songs = () => {
 				throw new Error(res.message);
 			}
 			setSongs(res.data);
-			setIsLoading(false); // Stop loading after fetching songs
+			setIsLoading(false);
 		} catch (error) {
 			console.log(error);
-			setIsLoading(false); // Stop loading in case of error
+			setIsLoading(false);
 		}
 	};
 
@@ -69,6 +81,83 @@ const Songs = () => {
 		}
 	};
 
+	const handleLike = async (e, songId) => {
+		e.stopPropagation();
+		if (!checkInFavorites(songId)) {
+			try {
+				const response = await fetch(
+					`${conf.backendUrl}/users/addToFav`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+						body: JSON.stringify({ songId }),
+					}
+				);
+
+				if (!response.ok) {
+					const err = await response.json();
+					throw new Error(err.message);
+				}
+
+				const { data } = await response.json();
+				dispatch(login(data));
+				toast({
+					title: "Success ✅",
+					description: "Added to favorites",
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+				});
+			} catch (error) {
+				console.error(error);
+				toast({
+					title: "OOPS Something went wrong ❌",
+					description: "There was some problem with network",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+				});
+			}
+		} else {
+			try {
+				const response = await fetch(
+					`${conf.backendUrl}/users/delFromFav`,
+					{
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						credentials: "include",
+						body: JSON.stringify({ songId }),
+					}
+				);
+
+				if (!response.ok) {
+					const err = await response.json();
+					throw new Error(err.message);
+				}
+
+				const { data } = await response.json();
+				dispatch(login(data));
+				toast({
+					title: "Success ✅",
+					description: "Removed from favorites",
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+				});
+			} catch (error) {
+				console.error(error);
+				toast({
+					title: "OOPS Something went wrong ❌",
+					description: "There was some problem with network",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+				});
+			}
+		}
+	};
+
 	return (
 		<>
 			<Header
@@ -78,11 +167,11 @@ const Songs = () => {
 			<Box
 				as="section"
 				color={"white"}
-				h={"74%"}
+				h={"85%"}
 				w={"100%"}
 				p={{ base: 1, md: 4 }}
 				overflowY={"auto"}
-				overflowX={'hidden'}
+				overflowX={"hidden"}
 				css={{
 					"&::-webkit-scrollbar": {
 						width: "7px",
@@ -103,7 +192,6 @@ const Songs = () => {
 					w="full"
 					p={0}
 				>
-					{/* Show Skeleton Loader when loading */}
 					{isLoading
 						? [...Array(5)].map((_, index) => (
 								<Flex
@@ -153,22 +241,19 @@ const Songs = () => {
 									flexDirection={{
 										base: "column",
 										md: "row",
-									}} // Responsive direction
+									}}
 								>
-									{/* Left section with song image and details */}
 									<HStack
 										spacing={4}
 										alignItems="center"
 										w="full"
 									>
-										{/* Song Image */}
 										<Avatar
 											src={getImageUrl(song)}
 											size={{ base: "md", md: "lg" }}
 											borderRadius="full"
 										/>
 
-										{/* Song Details */}
 										<VStack
 											align="start"
 											spacing={1}
@@ -184,7 +269,11 @@ const Songs = () => {
 												noOfLines={1}
 												isTruncated
 											>
-												{trimTolength(song.songName)}
+												{isMobile
+													? trimTolength(
+															song.songName
+													  )
+													: song.songName}
 											</Text>
 											<Text
 												fontSize={{
@@ -195,7 +284,9 @@ const Songs = () => {
 												noOfLines={1}
 												isTruncated
 											>
-												{trimTolength(song.artist)}
+												{isMobile
+													? trimTolength(song.artist)
+													: song.artist}
 											</Text>
 											<Text
 												fontSize={{
@@ -211,59 +302,26 @@ const Songs = () => {
 										</VStack>
 									</HStack>
 
-									{/* Right section with additional actions */}
 									<HStack
 										spacing={4}
 										alignItems="center"
 										mt={{ base: 4, md: 0 }}
 									>
-										<Box>
-											<Text
-												fontSize={{
-													base: "xs",
-													md: "sm",
-												}}
-												color="gray.400"
-											>
-												Duration:{" "}
-												{song.duration || "3:30"}
-											</Text>
-										</Box>
-
-										{/* Play Icon */}
-										<Box
-											as="button"
-											bg="teal.500"
-											p={2}
-											borderRadius="full"
-											_hover={{
-												bg: "teal.400",
-											}}
-										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke="currentColor"
-												width="24"
-												height="24"
-												color="white"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M14.752 11.168l-5.664-3.168A1 1 0 008 8.84v6.32a1 1 0 001.088.84l5.664-3.168a1 1 0 000-1.664z"
-												/>
-											</svg>
-										</Box>
+										{/* <IconButton
+											aria-label="Like"
+											icon={checkInFavorites(song._id) ? <AiFillHeart /> : <FiHeart />}
+											variant="ghost"
+											color={checkInFavorites(song._id) ? 'red.300' : 'white'}
+											size="lg"
+											onClick={(e) => handleLike(e, song._id)}
+											_hover={{ bg: "transparent" }}
+											_focus={{ bg: "transparent" }}
+										/> */}
 									</HStack>
 								</Flex>
 						  ))}
 				</VStack>
 			</Box>
-
-			<Player />
 		</>
 	);
 };

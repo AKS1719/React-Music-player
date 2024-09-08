@@ -24,7 +24,8 @@ const LibraryComponent = () => {
             overflowY={'auto'}
             direction="column"
             rounded="10px"
-            h="max-content"
+            h={"max-content"}
+            // h={'100%'}
             as="section"
             bg="gray.800"
             borderWidth="2px"
