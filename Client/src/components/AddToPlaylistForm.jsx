@@ -14,6 +14,10 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { markNotAddToPlaylist } from "../store/addToPlaylistSlice";
 
+import { MdLibraryAdd } from "react-icons/md";
+import PlaylistComponent from "./PlaylistComponent";
+import conf from "../conf/conf";
+import {login} from "../store/authSlice.js"
 const AddToPlaylistForm = () => {
 	const dispatch = useDispatch();
 	const {
@@ -24,8 +28,35 @@ const AddToPlaylistForm = () => {
 	const [error, seterror] = useState("");
 	const onSubmit = async (data) => {
 		seterror("");
+		console.log('fetching')
+		try {
+			const respo = await fetch(`${conf.backendUrl}/playlist/createPlaylist`,
+				{
+					method:"POST",
+					headers:{
+						"Content-Type":"application/json"
+					},
+					credentials:'include',
+					body:JSON.stringify(data)
+				}
+			)
+			if(!respo.ok){
+				const er = await respo.json()
+				throw new Error(er.message)
+			}
+
+			const res = await respo.json()
+			console.log(res.data)
+			dispatch(login(res.data))
+			
+		} catch (error) {
+			seterror(error.message)
+			console.log(error.message)
+		}
 	};
 	const isPlaylistAvailable = useSelector(state=> state.auth.userData?.playlists) || []
+
+	const song = useSelector(state=> state.addToPlaylist.song)
 
 	return (
 		<Box
@@ -60,11 +91,11 @@ const AddToPlaylistForm = () => {
 				Add to playlist
 			</Text>
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<Flex gap={4} alignItems="flex-end">
+				<Flex gap={4} flexDirection={{base:'column', md:'row',lg:'row'}} alignItems={{base:'center',md:'flex-end',lg:'flex-end'}} >
 					<FormControl isInvalid={errors.playlistName} flex="1">
 						<FormLabel></FormLabel>
 						<Input
-							type="email"
+							type="text"
 							{...register("playlistName", {
 								required: "Playlist Name is Required",
 							})}
@@ -77,7 +108,7 @@ const AddToPlaylistForm = () => {
 					</FormControl>
 					<Button
 						type="submit"
-						bg={"seagreen"}
+						bg={"teal.500"}
 						color={"black"}
 						borderRadius={"20px"}
 						width="auto"
@@ -92,17 +123,66 @@ const AddToPlaylistForm = () => {
 					</Button>
 				</Flex>
 			</form>
-
-			{ isPlaylistAvailable && isPlaylistAvailable.length > 0 ? <Box py={2}
-				my={5} 
-				bg={'gray.900'}
-				border={'1px solid'}
-				borderColor={'gray.600'}
-
-			>
-				hi hter
+			<Box
+					h="75%"
+					mt={5}
+					bg="gray.800"
+					rounded="md"
+					borderWidth="2px"
+					borderColor="teal.400"
+					textAlign="center"
+					color="white"
+                    maxH={'204px'}
+					overflowY={"auto"}
+					overflowX={"hidden"}
+					css={{
+						"&::-webkit-scrollbar": {
+							width: "7px",
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-thumb": {
+							background: "#319795", // teal.500 equivalent
+							borderRadius: "10px",
+						},
+						"&::-webkit-scrollbar-track": {
+							background: "#ffffff",
+							borderRadius: "10px",
+						},
+					}}
+				>
+			{
+				Array.isArray(isPlaylistAvailable) && isPlaylistAvailable.length >0 ? 
+				
+					(
+						 isPlaylistAvailable?.map((playlist)=>(
+								<Box
+                                    key={playlist?._id}
+                                    p={"1%"}
+                                    bg="gray.700"
+                                    rounded="md"
+                                    mb={"1%"}
+                                    _hover={{
+                                        bg: "gray.600",
+                                        transform: "scale(1.03)",
+                                    }}
+                                    transition="all 0.2s ease-in-out"
+                                    cursor="pointer"
+                                >
+                                    <PlaylistComponent
+                                        playlistName={playlist?.playlistName}
+										toAdd={song}
+										playlistId ={playlist?._id}
+                                    />
+                                </Box>
+						))
+					)
+				:
+				
+					null
+				
+			}
+			
 			</Box>
-			: null}
 		</Box>
 	);
 };

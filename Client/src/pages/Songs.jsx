@@ -195,22 +195,23 @@ const Songs = () => {
 				>
 					{isLoading
 						? [...Array(5)].map((_, index) => (
-								<Flex
-									key={index}
-									w="full"
-									bg="gray.800"
-									borderRadius="md"
-									p={4}
-									boxShadow="lg"
-								>
-									<SkeletonCircle size="12" />
-									<Box flex="1">
-										<SkeletonText
-											noOfLines={2}
-											spacing="4"
-										/>
-									</Box>
-								</Flex>
+							<Flex
+							key={index}
+							w="full"
+							bg="gray.800"
+							borderRadius="md"
+							p={4}
+							boxShadow="lg"
+							alignItems={'center'}
+						>
+							<SkeletonCircle size="12" />
+							<Box flex="1" ml={'2'}>
+								<SkeletonText
+									noOfLines={2}
+									spacing="4"
+								/>
+							</Box>
+						</Flex>
 						  ))
 						: songs?.map((song) => (
 								<Flex

@@ -17,9 +17,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { CiSearch } from "react-icons/ci";
 import conf from "../conf/conf";
 import { searched } from "../store/searchSlice";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { openDrawer } from "../store/drawerOpen.js";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import { logout } from "../store/authSlice.js";
 
 const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 	const authStatus = useSelector((state) => state.auth.status);
@@ -27,7 +28,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const userData = useSelector((state) => state.auth.userData);
 	const dispatch = useDispatch();
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -92,6 +93,11 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 	};
 
 
+	const handleAddToPlaylist = ()=>{
+		
+	}
+
+
 	return (
 		<Box
 			as="header"
@@ -99,7 +105,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 			w={"100%"}
 			bg={"gray.800"}
 			p={"2%"}
-			px={'4%'}
+			px={"4%"}
 			color={"white"}
 			borderWidth={"1px"}
 			borderColor={"gray.700"}
@@ -117,7 +123,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 				aria-label="Open menu"
 				m={4}
 				colorScheme="teal"
-				display={{ base: "block",md:"block", lg: "none" }}
+				display={{ base: "block", md: "block", lg: "none" }}
 			/>
 			{isSearchPage && (
 				<Box width={{ md: "40%" }}>
@@ -138,7 +144,9 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 								borderRadius="20px"
 								p={5}
 								border={"0px"}
-								onFocus={()=>{console.log('clicked')}}
+								onFocus={() => {
+									console.log("clicked");
+								}}
 								_hover={{
 									border: "0px",
 									borderColor: "white",
@@ -166,13 +174,29 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 
 			{(playlistName || artist || album) && (
 				<Box
-					textAlign="right"
+					textAlign="left"
 					flex="1"
 					pr={"2%"}
-					fontSize={"1.1vw"}
+					fontSize={"md"}
 					lineHeight={"1.5"}
+					fontWeight={"bold"}
 				>
-					{playlistName && <Text>{playlistName}</Text>}
+					{playlistName && (
+						<Flex
+							alignItems={'center'}
+						>
+							<Text>{playlistName}</Text>
+							<IconButton
+							ml={2}
+								icon={<AddIcon />}
+								colorScheme={"green"}
+								variant="outline"
+								aria-label={"Add to Playlist"}
+								onClick={handleAddToPlaylist}
+								_hover={{ bg: "green.600", color: "white" }}
+							/>
+						</Flex>
+					)}
 					{artist && <Text>{artist}</Text>}
 					{album && <Text>{album}</Text>}
 				</Box>
@@ -197,26 +221,28 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 						aria-label="User menu"
 					>
 						<Avatar
-						ml={'2'}
+							ml={"2"}
 							name={userData?.name}
 							src={userData?.avatar}
-							size={{base:'sm', md:'md'}}
+							size={{ base: "sm", md: "md" }}
 						/>
 					</MenuButton>
 					<MenuList
 						bg={"gray.700"}
 						borderRadius={"20px"}
-                        borderColor={'gray.600'}
-                        p={2}
+						borderColor={"gray.600"}
+						p={2}
 					>
 						<MenuItem
-							onClick={() => {navigate(`/profile/${userData?._id}`)}}
+							onClick={() => {
+								navigate(`/profile/${userData?._id}`);
+							}}
 							bg={"transparent"}
-                            w={'full'}
-                            borderRadius={'10px'}
-                            _hover={{
-                                bg:'gray.600'
-                            }}
+							w={"full"}
+							borderRadius={"10px"}
+							_hover={{
+								bg: "gray.600",
+							}}
 						>
 							Profile
 						</MenuItem>

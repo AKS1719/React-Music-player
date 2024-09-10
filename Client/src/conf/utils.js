@@ -5,6 +5,17 @@ const trimTolength = (str, s=20) => {
     return str;
 }
 
+const getImageUrl = (song) => {
+    if (song.songThumbnailUrl) {
+        return song.songThumbnailUrl;
+    }
+    const placeholderImage = `https://via.placeholder.com/100.png?text=${encodeURIComponent(
+        song.songName
+    )}`;
+    return placeholderImage;
+};
+
 export {
-    trimTolength
+    trimTolength,
+    getImageUrl
 }

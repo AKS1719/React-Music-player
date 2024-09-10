@@ -6,7 +6,7 @@ const playlistsSchema = new Schema(
         playlistName: {
             type: String,
             required: true,
-            trim:true
+            trim:true,
         },
         userId: {
             type: Schema.Types.ObjectId,

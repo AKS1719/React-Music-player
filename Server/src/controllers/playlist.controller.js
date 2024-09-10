@@ -19,6 +19,20 @@ const createPlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
+    const playlistExist = await Playlist.findOne(
+        {
+            $and:{
+                playlistName,
+                userId : user._id
+            }
+
+        }
+    )
+
+    if(playlistExist){
+        throw new ApiError(403, "You already have a playlist with same name")
+    }
+
     const playlist = await Playlist.create({
         playlistName,
         userId: user._id,
@@ -33,9 +47,12 @@ const createPlaylist = asyncHandler(async (req, res) => {
     user.playlists.push(playlist)
     user.save({ validateBeforeSave: false });
 
+    const finalUser = await User.findById(user._id).select('-password -refreshToken')
+    .populate('playlists','playlistName')
+
     return res
         .status(201)
-        .json(new ApiResponse(201, playlist, "Playlist created successfully"));
+        .json(new ApiResponse(201, finalUser, "Playlist created successfully"));
 });
 const updatePlaylist = asyncHandler(async (req, res) => {
     const { playlistId, playlistName, songsId } = req.body;
@@ -70,6 +87,47 @@ const updatePlaylist = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, finalPl, "Playlist updated successfully"));
 });
+
+const addToPlaylist = asyncHandler(async (req, res) => {
+    const { playlistId, songId } = req.body;
+
+    if (!playlistId || !songId) {
+        throw new ApiError(404, "Missing playlist ID or song ID");
+    }
+
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const playlist = await Playlist.findById(playlistId);
+
+    if (!playlist) {
+        throw new ApiError(404, "Playlist does not exist");
+    }
+
+    // Check if the song is already in the playlist
+    if (playlist.songs.includes(songId)) {
+        throw new ApiError(400, "Song already in the playlist");
+    }
+
+    // Add the new song to the playlist if it's not already there
+    playlist.songs.push(songId);
+
+    // Save the updated playlist
+    await playlist.save({ validateBeforeSave: false });
+
+    // Fetch the updated playlist with populated song details
+    const finalPl = await Playlist.findById(playlistId).populate("songs");
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, finalPl, "Song added to playlist successfully"));
+});
+
 const deletePlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.body;
     if (!playlistId) {
@@ -92,9 +150,11 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     }
 
 
+    const finalUser = await User.findById(user._id).select("-password -refreshToken").populate('playlists','playlistName');
+
     return res
         .status(203)
-        .json(new ApiResponse(203, {}, "Playlist deleted successfully"));
+        .json(new ApiResponse(203, finalUser, "Playlist deleted successfully"));
 });
 
 // for specific user
@@ -119,9 +179,34 @@ const getAllPlaylists = asyncHandler(async (req, res) => {
         );
 });
 
+const getAllSongsFromPlaylist = asyncHandler(async (req,res)=>{
+    const {playlistId} = req.body;
+
+    let playlist = await Playlist.findById(playlistId)
+    
+
+    if(!playlist){
+        throw new ApiError(404, "Playlist not found")
+    }
+
+    playlist = await Song.populate(playlist,
+        {
+            path:"songs",
+            select:"-duration"
+        }
+    )
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200, playlist, "success")
+    )
+})
+
 export default {
     createPlaylist,
     updatePlaylist,
     deletePlaylist,
     getAllPlaylists,
+    addToPlaylist,
+    getAllSongsFromPlaylist
 };

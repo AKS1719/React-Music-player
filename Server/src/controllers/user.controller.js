@@ -321,6 +321,9 @@ const addToFavorites = asyncHandler(async (req,res)=>{
             }
         }
     )
+    if(user.favorites.includes(songId)){
+        throw new ApiError(403,"Already added to Favorites")
+    }
     user.favorites.push(songId)
     user.save({validateBeforeSave:false})
 
@@ -362,6 +365,25 @@ const deleteFromFavorites = asyncHandler(async (req, res) => {
     );
 });
 
+const getUserFav = asyncHandler(async (req, res) => {
+    let user = await User.findById(req.user._id)
+        .select('-password -refreshToken')
+        .populate('favorites');  // Correctly populate the 'favorites' field with Song data
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const favorites = user.favorites;
+
+    if (!favorites || favorites.length === 0) {
+        throw new ApiError(404, "Nothing in Favorites");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, favorites, "Success"));
+});
 
 
 export default {
@@ -376,5 +398,6 @@ export default {
     updateAvatar,
     getArtistList,
     addToFavorites,
-    deleteFromFavorites
+    deleteFromFavorites,
+    getUserFav
 }

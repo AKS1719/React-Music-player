@@ -1,74 +1,69 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import { useSelector } from "react-redux";
+import { Header } from "../components";
 import {
-	Avatar,
 	Box,
-	Flex,
-	HStack,
-	SkeletonCircle,
-	SkeletonText,
-	Text,
 	useBreakpointValue,
 	VStack,
+	Flex,
+	SkeletonCircle,
+	SkeletonText,
+    Text,
+    HStack,
+    Avatar,
 } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
-import { Header, Player } from "../components";
-import { useParams } from "react-router-dom";
 import conf from "../conf/conf";
 import { getImageUrl, trimTolength } from "../conf/utils";
+
 import { playSong } from "../store/playerSlice";
+import { useDispatch } from "react-redux";
 
-const Playlist = () => {
-	const { playlistId } = useParams();
-
-	const [PlaylistData, setPlaylistData] = useState();
-
-	const [pSongs, setPSongs] = useState([]);
-
+const Favorites = () => {
+	const [favorites, setFavorites] = useState([])
 	const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch()
 
 	const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
 
-	const fetchAllSongs = async () => {
-		setIsLoading(true);
-		try {
-			const respo = await fetch(
-				`${conf.backendUrl}/playlist/getAllSongs`,
-				{
-					credentials: "include",
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ playlistId }),
-				}
-			);
-			if (!respo.ok) {
-				const err = await respo.json();
-				throw new Error(err.message);
-			}
-			const { data } = await respo.json();
-			console.log(data);
-			setPSongs(data.songs);
-			setPlaylistData(data);
-		} catch (error) {
-			console.log(error.message);
-		}
-		setIsLoading(false);
-	};
 
-	useEffect(() => {
-		if (playlistId) {
-			fetchAllSongs();
-		}
-	}, [playlistId]);
+    const fetchAllFavorites = async()=>{
+        setIsLoading(true)
+        try {
+            const respo = await fetch(`${conf.backendUrl}/users/getAllFav`,
+                {
+                    method:"GET",
+                    credentials:"include"
+                }
+            )
+            if(!respo.ok)
+            {
+                const err = await respo.json()
+                throw new Error(err.message)
+            }
+    
+            const {data}= await respo.json();
+            // console.log(data)
+            setFavorites(data)
+        } catch (error) {
+            console.log(error.message)
+        }
+        setIsLoading(false)
 
-	return PlaylistData ? (
+    }
+
+    const userFav= useSelector((state)=> state.auth.userData?.favorites)
+    // console.log(userFav)
+    useEffect(()=>{
+        if(userFav){
+            fetchAllFavorites()
+        }
+    },[userFav])
+
+
+
+	return Array.isArray(favorites) ? (
 		<>
-			<Header
-				forPage={"Playlist"}
-				playlistName={PlaylistData?.playlistName}
-			/>
+			<Header forPage={"Playlist"} />
 			<Box
 				as="section"
 				color={"white"}
@@ -120,7 +115,7 @@ const Playlist = () => {
 									</Box>
 								</Flex>
 						  ))
-						: pSongs?.map((song) => (
+						: favorites?.map((song) => (
 								<Flex
 									key={song._id}
 									w="full"
@@ -223,15 +218,15 @@ const Playlist = () => {
 										mt={{ base: 4, md: 0 }}
 									>
 										{/* <IconButton
-											aria-label="Like"
-											icon={checkInFavorites(song._id) ? <AiFillHeart /> : <FiHeart />}
-											variant="ghost"
-											color={checkInFavorites(song._id) ? 'red.300' : 'white'}
-											size="lg"
-											onClick={(e) => handleLike(e, song._id)}
-											_hover={{ bg: "transparent" }}
-											_focus={{ bg: "transparent" }}
-										/> */}
+                                        aria-label="Like"
+                                        icon={checkInFavorites(song._id) ? <AiFillHeart /> : <FiHeart />}
+                                        variant="ghost"
+                                        color={checkInFavorites(song._id) ? 'red.300' : 'white'}
+                                        size="lg"
+                                        onClick={(e) => handleLike(e, song._id)}
+                                        _hover={{ bg: "transparent" }}
+                                        _focus={{ bg: "transparent" }}
+                                    /> */}
 									</HStack>
 								</Flex>
 						  ))}
@@ -239,10 +234,8 @@ const Playlist = () => {
 			</Box>
 		</>
 	) : (
-		<>
-			<Text>Playlist Not Exists</Text>
-		</>
+		<Text>No songs added to favorites</Text>
 	);
 };
 
-export default Playlist;
+export default Favorites;

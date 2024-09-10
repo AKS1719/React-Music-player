@@ -11,6 +11,8 @@ import { PageTransition } from "./components/index.js";
 import Songs from "./pages/Songs.jsx";
 import BaseLayout from "./components/Layout/BaseLayout.jsx";
 import Profile from "./pages/Profile.jsx";
+import Playlist from "./pages/Playlist.jsx";
+import Favorites from "./pages/Favorites.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -47,6 +49,14 @@ const router = createBrowserRouter([
 						path: "profile/:username",
 						element: <Profile />,
 					},
+					{
+						path:"playlist/:playlistId",
+						element:<Playlist/>
+					},
+					{
+						path:'favorites',
+						element:<Favorites/>
+					}
 				],
 			},
 		],

@@ -54,8 +54,6 @@ const Player = ({ playlist }) => {
 	const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
 	const [addedToFave, setAddedToFave] = useState(false);
 	const favorites = useSelector((state) => state.auth.userData?.favorites);
-	const isPlaylistAvailable =
-		useSelector((state) => state.auth.userData?.playlist) || [];
 	const toast = useToast();
 	const authStatus = useSelector((state) => state.auth.status);
 
@@ -318,7 +316,7 @@ const Player = ({ playlist }) => {
 						p={2}
 						borderWidth={"1px"}
 						borderStyle={"solid"}
-						borderRadius={"10px"}
+						borderTopRadius='20px'
 						borderColor={"gray.700"}
 						color={"white"}
 					>
@@ -539,7 +537,7 @@ const Player = ({ playlist }) => {
 						p={2}
 						borderWidth={"1px"}
 						borderStyle={"solid"}
-						borderRadius={"20px"}
+						borderTopRadius={"30px"}
 						borderColor={"gray.700"}
 						color={"white"}
 						display={isMobile && !isOpen ? "flex" : "none"}
@@ -587,7 +585,8 @@ const Player = ({ playlist }) => {
 							w={"100%"}
 							bg={"rgba(26, 32, 44, 0.5)"}
 							backdropFilter={"blur(10px)"}
-							borderRadius="20px"
+							
+						borderTopRadius='20px'
 							overflowY={"auto"}
 						>
 							<DrawerCloseButton color="teal.500" />
@@ -596,7 +595,8 @@ const Player = ({ playlist }) => {
 									py={10}
 									borderWidth={"1px"}
 									borderStyle={"solid"}
-									borderRadius={"10px"}
+									// borderRadius={"10px"}
+									borderTopRadius={'20px'}
 									borderColor={"gray.700"}
 									color={"white"}
 								>
