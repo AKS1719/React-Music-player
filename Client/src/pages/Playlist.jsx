@@ -16,7 +16,7 @@ import { Header, Player } from "../components";
 import { useParams } from "react-router-dom";
 import conf from "../conf/conf";
 import { getImageUrl, trimTolength } from "../conf/utils";
-import { playSong } from "../store/playerSlice";
+import { playPlaylist, playSong } from "../store/playerSlice";
 import { showList, hideList } from "../store/showList.js";
 import ShowSongList from "../components/ShowSongList";
 
@@ -61,7 +61,7 @@ const Playlist = () => {
 		if (playlistId) {
 			fetchAllSongs();
 		}
-	}, [playlistId]);
+	}, [playlistId,toShow]);
 
 	return (
 		<>
@@ -85,7 +85,7 @@ const Playlist = () => {
 						left={"50%"}
 						transform={"translate(-50%,-50%)"}
 					>
-						<ShowSongList/>
+						<ShowSongList playlistId={playlistId}/>
 					</Box>
 					</>
 				)
@@ -165,13 +165,7 @@ const Playlist = () => {
 											}}
 											cursor="pointer"
 											onClick={() => {
-												if (!authStatus) {
-													alert(
-														"Please login to listen to the songs"
-													);
-												} else {
-													dispatch(playSong(song));
-												}
+													dispatch(playPlaylist({song,playlist:playlistId}));
 											}}
 											alignItems="center"
 											justifyContent="space-between"

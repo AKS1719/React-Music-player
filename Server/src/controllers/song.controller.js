@@ -4,6 +4,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { User } from "../models/user.models.js";
 import { Song } from "../models/songs.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {Playlist} from "../models/playlists.models.js"
 
 const addSong = asyncHandler(async (req, res) => {
 	const { songName, genre } = req.body;
@@ -169,6 +170,39 @@ const getSongsByName = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, songs, "Songs found"));
 });
 
+const getRandomSongs = asyncHandler(async(req,res)=>{
+	const { playlistId } = req.body
+	if (!playlistId) {
+		throw new ApiError(400, "Playlist ID is required");
+	  }
+  
+	  // Find the playlist
+	  const playlist = await Playlist.findById(playlistId);
+	  if (!playlist) {
+		throw new ApiError(404, "Playlist not found");
+	  }
+  
+	  // Get song IDs from the playlist
+	  const playlistSongIds = playlist.songs;
+  
+	  // Find random songs excluding the ones in the playlist
+	  const randomSongs = await Song.aggregate([
+		{
+		  $match: {
+			_id: { $nin: playlistSongIds },
+		  },
+		},
+		{
+		  $sample: { size: 40 },
+		},
+	  ]);
+  
+	  res.status(200).json({
+		success: true,
+		songs: randomSongs,
+	  });
+})
+
 
 export default {
 	addSong,
@@ -176,4 +210,5 @@ export default {
 	getSongsList,
 	getSongs,
 	getSongsByName,
+	getRandomSongs
 };

@@ -5,7 +5,6 @@ import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import {accessTokenOptions, refreshTokenOptions} from "../constants.js"
 import { Playlist } from "../models/playlists.models.js";
-import { RecentlyPlayed } from "../models/recentlyPlayed.models.js"
 import {Song} from "../models/songs.models.js"
 const generateAccessAndRefreshTokens = async (userId) => {
     try {

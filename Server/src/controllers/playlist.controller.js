@@ -4,7 +4,6 @@ import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { User } from "../models/user.models.js";
 import { Song } from "../models/songs.models.js";
-import { RecentlyPlayed } from "../models/recentlyPlayed.models.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
     const { playlistName } = req.body;
@@ -56,14 +55,12 @@ const createPlaylist = asyncHandler(async (req, res) => {
 });
 const updatePlaylist = asyncHandler(async (req, res) => {
     const { playlistId, playlistName, songsId } = req.body;
-
-    if (!playlistId || !songsId || !playlistName) {
-        throw new ApiError(404, "Missing playlist ID or Name or songs missing");
+    
+    if (!playlistId || !songsId) {
+        throw new ApiError(400, "Missing playlist ID or songs ID");
     }
 
-    const user = await User.findById(req.user._id).select(
-        "-password -refreshToken"
-    );
+    const user = await User.findById(req.user._id).select("-password -refreshToken");
 
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -72,20 +69,32 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     const playlist = await Playlist.findById(playlistId);
 
     if (!playlist) {
-        throw new ApiError(404, "Playlist not exist");
+        throw new ApiError(404, "Playlist does not exist");
     }
 
-    playlist.playlistName = playlistName;
-    playlist.userId = user._id;
-    playlist.songs = songsId;
-    playlist.save({ validateBeforeSave: false });
+    if (playlistName) {
+        playlist.playlistName = playlistName;
+    }
 
-    let finalPl = await Playlist.findById(playlistId)
-        .populate("songs")
-    
-    return res
-        .status(200)
-        .json(new ApiResponse(200, finalPl, "Playlist updated successfully"));
+    // Retrieve existing song IDs in the playlist
+    const existingSongIds = playlist.songs.map(song => song.toString());
+
+    // Filter out songs that are already in the playlist
+    const newSongsId = songsId.filter(songId => !existingSongIds.includes(songId));
+
+    if (newSongsId.length > 0) {
+        // Add new songs to the playlist
+        playlist.songs.push(...newSongsId);
+    }
+
+    playlist.userId = user._id;
+
+    await playlist.save({ validateBeforeSave: false });
+
+    // Populate the playlist with songs
+    const finalPl = await Playlist.findById(playlistId).populate("songs");
+
+    return res.status(200).json(new ApiResponse(200, finalPl, "Playlist updated successfully"));
 });
 
 const addToPlaylist = asyncHandler(async (req, res) => {

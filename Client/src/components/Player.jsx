@@ -41,8 +41,8 @@ import { login } from "../store/authSlice.js";
 import { markAddToPlaylistWithSong } from "../store/addToPlaylistSlice.js";
 import AddToPlaylistForm from "./AddToPlaylistForm.jsx";
 
-const Player = ({ playlist }) => {
-	const song = useSelector((state) => state.player.song);
+const Player = () => {
+	const currSong = useSelector((state) => state.player.song);
 	const audioRef = useRef(null);
 	const [isPlaying, setIsPlaying] = useState(true);
 	const [volume, setVolumeState] = useState(0.5);
@@ -56,12 +56,12 @@ const Player = ({ playlist }) => {
 	const favorites = useSelector((state) => state.auth.userData?.favorites);
 	const toast = useToast();
 	const authStatus = useSelector((state) => state.auth.status);
-
+	const playlist = useSelector((state) => state.player.playlist);
 	const ShowAddToPlaylist = useSelector(
 		(state) => state.addToPlaylist?.isAddToPlaylist
 	);
-
-	const handleRecentlyPlayed = () => {};
+	const [song, setSong] = useState({});
+	const [allSongs, setAllSongs] = useState([]);
 
 	const formatTime = (t) => {
 		let mm = Math.floor(t / 60)
@@ -234,16 +234,64 @@ const Player = ({ playlist }) => {
 		}
 	};
 
+	const handleNext = () => {
+		if (Array.isArray(allSongs) && allSongs.length > 0) {
+			let ind = allSongs.findIndex(function (aSong) {
+				return song._id === aSong._id;
+			});
+			setSong(allSongs[(ind + 1) % allSongs.length]);
+		} else {
+			setSong(currSong);
+		}
+	};
+
+	const handlePrev = ()=>{
+		if (Array.isArray(allSongs) && allSongs.length > 0) {
+			let ind = allSongs.findIndex(function (aSong) {
+				return song._id === aSong._id;
+			});
+			if(ind == 0 ){
+				ind = allSongs.length
+			}
+			setSong(allSongs[ind-1])
+		} 
+	}
+
+	const fetchPlaylistSongs = async () => {
+		try {
+			const respo = await fetch(
+				`${conf.backendUrl}/playlist/getAllSongs`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ playlistId: playlist }),
+					credentials: "include",
+				}
+			);
+
+			if (!respo.ok) {
+				const err = await respo.json();
+				throw new Error(err.message);
+			}
+			const list = await respo.json();
+			setAllSongs(list.data.songs);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	useEffect(() => {
-		if (song) {
+		if (currSong) {
+			setSong(currSong);
 			setIsPlaying(true);
-			handleRecentlyPlayed();
 			startAnimations();
 		} else {
 			setIsPlaying(false);
 			stopAnimations();
 		}
-	}, [song]);
+	}, [currSong]);
 
 	useEffect(() => {
 		if (Array.isArray(favorites) && favorites.length > 0 && song) {
@@ -251,6 +299,15 @@ const Player = ({ playlist }) => {
 			setAddedToFave(exists);
 		}
 	}, [favorites, song]);
+
+	useEffect(() => {
+		if (playlist) {
+			fetchPlaylistSongs();
+		}
+		else{
+			setAllSongs([])
+		}
+	}, [playlist]);
 
 	useEffect(() => {
 		if (audioRef.current) {
@@ -314,7 +371,7 @@ const Player = ({ playlist }) => {
 						p={2}
 						borderWidth={"1px"}
 						borderStyle={"solid"}
-						borderTopRadius='20px'
+						borderTopRadius="20px"
 						borderColor={"gray.700"}
 						color={"white"}
 					>
@@ -324,7 +381,7 @@ const Player = ({ playlist }) => {
 							px={3}
 						>
 							{/* Album Cover */}
-							<Box display={"flex"}>
+							<Box display={"flex"} w={'20%'}>
 								<Image
 									src={getImageUrl(song)}
 									alt={song?.songName || "Unknown"}
@@ -385,6 +442,7 @@ const Player = ({ playlist }) => {
 									_focus={{
 										bg: "transparent",
 									}}
+									onClick={handlePrev}
 								/>
 								<IconButton
 									aria-label={isPlaying ? "Pause" : "Play"}
@@ -407,6 +465,7 @@ const Player = ({ playlist }) => {
 									_focus={{
 										bg: "transparent",
 									}}
+									onClick={handleNext}
 								/>
 								<IconButton
 									aria-label="Repeat"
@@ -583,8 +642,7 @@ const Player = ({ playlist }) => {
 							w={"100%"}
 							bg={"rgba(26, 32, 44, 0.5)"}
 							backdropFilter={"blur(10px)"}
-							
-						borderTopRadius='20px'
+							borderTopRadius="20px"
 							overflowY={"auto"}
 						>
 							<DrawerCloseButton color="teal.500" />
@@ -594,7 +652,7 @@ const Player = ({ playlist }) => {
 									borderWidth={"1px"}
 									borderStyle={"solid"}
 									// borderRadius={"10px"}
-									borderTopRadius={'20px'}
+									borderTopRadius={"20px"}
 									borderColor={"gray.700"}
 									color={"white"}
 								>
@@ -657,6 +715,7 @@ const Player = ({ playlist }) => {
 												_focus={{
 													bg: "transparent",
 												}}
+												onClick={handlePrev}
 											/>
 											<IconButton
 												aria-label={
@@ -687,6 +746,7 @@ const Player = ({ playlist }) => {
 												_focus={{
 													bg: "transparent",
 												}}
+												onClick={handleNext}
 											/>
 											<IconButton
 												aria-label="Repeat"
