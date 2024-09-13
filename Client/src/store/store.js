@@ -6,6 +6,9 @@ import signupPage from "./signupSlice.js"
 import player from "./playerSlice.js"
 import drawerOpen from "./drawerOpen.js"
 import addToPlaylist from "./addToPlaylistSlice.js"
+import showList from "./showList.js"
+
+
 const store = configureStore(
     {
         reducer: {
@@ -15,7 +18,8 @@ const store = configureStore(
             signupPage,
             player,
             drawerOpen,
-            addToPlaylist
+            addToPlaylist,
+            showList
         }
     }
 )

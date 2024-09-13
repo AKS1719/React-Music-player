@@ -42,10 +42,12 @@ const Favorites = () => {
             }
     
             const {data}= await respo.json();
-            // console.log(data)
             setFavorites(data)
         } catch (error) {
             console.log(error.message)
+			if(error.message=="Nothing in Favorites"){
+				setFavorites([])
+			}
         }
         setIsLoading(false)
 
@@ -61,9 +63,9 @@ const Favorites = () => {
 
 
 
-	return Array.isArray(favorites) ? (
+	return Array.isArray(favorites) && favorites.length>0 ? (
 		<>
-			<Header forPage={"Playlist"} />
+			<Header forPage={"Favorites"} />
 			<Box
 				as="section"
 				color={"white"}
@@ -234,7 +236,11 @@ const Favorites = () => {
 			</Box>
 		</>
 	) : (
+		<>
+		
+		<Header forPage={"Favorites"} />
 		<Text>No songs added to favorites</Text>
+		</>
 	);
 };
 

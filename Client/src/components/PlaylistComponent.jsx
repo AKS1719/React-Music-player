@@ -13,7 +13,6 @@ const PlaylistComponent = ({ playlistName, toAdd , playlistId}) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const handlePlaylistDelete = async(e)=>{
-        console.log(playlistId)
         e.stopPropagation()
         try {
             const respo = await fetch(`${conf.backendUrl}/playlist/deletePlaylist`,
@@ -32,7 +31,6 @@ const PlaylistComponent = ({ playlistName, toAdd , playlistId}) => {
 			}
 
 			const res = await respo.json()
-			console.log(res.data)
 			dispatch(login(res.data))
         } catch (error) {
             console.log(error)

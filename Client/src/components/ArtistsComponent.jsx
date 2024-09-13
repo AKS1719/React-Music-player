@@ -20,12 +20,11 @@ const ArtistsComponent = () => {
             );
             const res = await response.json();
             if (res.statusCode >= 400) {
-                console.log(res);
                 throw new Error(res.message);
             }
             setArtists(res?.data?.artists);
         } catch (error) {
-            console.log(error);
+            console.log(error)
         } finally {
             setIsLoading(false); // Stop loading when data is fetched
         }

@@ -34,7 +34,6 @@ const Login = () => {
 	const [error, seterror] = useState("");
 	const onSubmit = async (data) => {
 		seterror("");
-		console.log(data);
 		try {
 			const res = await fetch(`${conf.backendUrl}/users/login`, {
 				method: "POST",
@@ -51,7 +50,6 @@ const Login = () => {
 			const respo = await res.json();
 			if (respo && respo.data) {
 				dispatch(login(respo.data));
-				console.log("logged in successfully");
 				dispatch(markNotLogin());
 			}
 		} catch (error) {

@@ -54,13 +54,11 @@ const Signup = () => {
 			});
 			if (!res.ok) {
 				const err = await res.json();
-				console.log(err.message);
 				throw new Error(err.message);
 			}
 			const respo = await res.json();
 			if (respo && respo.data) {
 				dispatch(login(respo.data));
-				console.log("logged in succesully");
 				dispatch(markNotsigninIn());
 			}
 		} catch (error) {
@@ -117,7 +115,6 @@ const Signup = () => {
 	};
 
 	useEffect(() => {
-		console.log(googleReceivedData);
 	}, [googleReceivedData]);
 
 	return (

@@ -28,7 +28,6 @@ const AddToPlaylistForm = () => {
 	const [error, seterror] = useState("");
 	const onSubmit = async (data) => {
 		seterror("");
-		console.log('fetching')
 		try {
 			const respo = await fetch(`${conf.backendUrl}/playlist/createPlaylist`,
 				{
@@ -46,12 +45,10 @@ const AddToPlaylistForm = () => {
 			}
 
 			const res = await respo.json()
-			console.log(res.data)
 			dispatch(login(res.data))
 			
 		} catch (error) {
 			seterror(error.message)
-			console.log(error.message)
 		}
 	};
 	const isPlaylistAvailable = useSelector(state=> state.auth.userData?.playlists) || []

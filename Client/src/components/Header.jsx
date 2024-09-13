@@ -21,6 +21,7 @@ import { AddIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { openDrawer } from "../store/drawerOpen.js";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice.js";
+import {showList} from "../store/showList.js"
 
 const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 	const authStatus = useSelector((state) => state.auth.status);
@@ -94,7 +95,7 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 
 
 	const handleAddToPlaylist = ()=>{
-		
+		dispatch(showList())
 	}
 
 
@@ -144,9 +145,6 @@ const Header = ({ isSearchPage, playlistName, artist, album, forPage }) => {
 								borderRadius="20px"
 								p={5}
 								border={"0px"}
-								onFocus={() => {
-									console.log("clicked");
-								}}
 								_hover={{
 									border: "0px",
 									borderColor: "white",

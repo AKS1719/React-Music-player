@@ -21,11 +21,9 @@ const LibraryComponent = () => {
 	const authStatus = useSelector((state) => state.auth.status);
     const dispatch = useDispatch()
 	const Playlists =
-		useSelector((state) => {
-			console.log(state.auth.userData, "libray check last one");
-			return state.auth.userData?.playlists;
-		}) || [];
-	console.log(Playlists, "last one ");
+		useSelector((state) => 
+			state.auth.userData?.playlists
+		) || [];
     const handleCreatePlaylist = () => {
 		if (!authStatus) {
 			alert("Login to add a song");

@@ -162,7 +162,6 @@ const Player = ({ playlist }) => {
 				});
 				setAddedToFave(true);
 			} catch (error) {
-				console.error(error);
 				toast({
 					title: "OOPS Something went wrong ❌",
 					description: "There was some problem with network",
@@ -199,7 +198,6 @@ const Player = ({ playlist }) => {
 				});
 				setAddedToFave(false);
 			} catch (error) {
-				console.error(error);
 				toast({
 					title: "OOPS Something went wrong ❌",
 					description: "There was some problem with network",
