@@ -169,7 +169,7 @@ Contributions are welcome!
 ---
 
 ## 📜 License
-
+This project is made by AKS
 This project is licensed under the **MIT License**.
 
 ---
